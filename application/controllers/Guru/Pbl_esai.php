@@ -35,136 +35,99 @@ class Pbl_esai extends CI_Controller
 		$this->load->view('templates/footer');
 	}
 
-	/* ===== AJAX UNTUK CRUD NILAI/FEEDBACK ===== */
+	/* ==============================================
+     ENDPOINT 1: MANAJEMEN SOAL (QUESTIONS)
+     ============================================== */
 
-	/**
-	 * AJAX: Mengambil semua jawaban siswa untuk CrudHandler
-	 */
-	public function get_submissions($essay_id)
-	{
-		$data = $this->Pbl_esai_model->get_submissions($essay_id);
-		$this->output
-			->set_content_type('application/json')
-			->set_output(json_encode($data));
-	}
+  public function get_questions_json($essay_id)
+  {
+      $data = $this->Pbl_esai_model->get_questions($essay_id);
+      echo json_encode($data);
+  }
 
-	/**
-	 * AJAX: Menyimpan Nilai & Feedback (Ini adalah 'Update' CrudHandler)
-	 */
-	public function save_feedback()
-	{
-		$this->form_validation->set_rules('id', 'Submission ID', 'required');
-		$this->form_validation->set_rules('grade', 'Nilai', 'numeric');
-		$this->form_validation->set_rules('feedback', 'Feedback', 'trim');
+  public function save_question()
+  {
+    // Validasi: Pastikan question_text dikirim (bisa array atau string)
+    if (empty($this->input->post('question_text'))) {
+        echo json_encode(['status' => 'error', 'message' => 'Soal tidak boleh kosong.']);
+        return;
+    }
 
-		if ($this->form_validation->run() === FALSE) {
-			$this->output
-				->set_content_type('application/json')
-				->set_output(json_encode(['status' => 'error', 'message' => validation_errors()]));
-			return;
-		}
+    $essay_id = $this->input->post('essay_id');
+    $id = $this->input->post('id'); // ID untuk Edit (jika ada)
+    
+    // Input dari View 'question_text[]' akan diterima sebagai Array
+    $questions = $this->input->post('question_text'); 
+    
+    // Pastikan formatnya array agar konsisten di Model
+    if (!is_array($questions)) {
+        $questions = [$questions];
+    }
 
-		$submission_id = $this->input->post('id');
-		
-		$payload = [
-			'grade' => $this->input->post('grade'),
-			'feedback' => $this->input->post('feedback')
-		];
+    $result = $this->Pbl_esai_model->save_question_batch($essay_id, $questions, $id);
 
-		// (Tambahkan cek keamanan jika perlu:
-		// $submission = $this->Pbl_esai_model->get_submission_by_id($submission_id);
-		// if($submission->class_id != $this->session->userdata('class_id')... )
-		
-		$this->Pbl_esai_model->save_feedback($submission_id, $payload);
-		$msg = 'Nilai & Feedback berhasil disimpan.';
-		
-		echo json_encode([
-			'status' => 'success',
-			'message' => $msg,
-			'csrf_hash' => $this->security->get_csrf_hash()
-		]);
-	}
+    if ($result) {
+      echo json_encode([
+        'status' => 'success', 
+        'message' => 'Soal berhasil disimpan.', 
+        'csrf_hash' => $this->security->get_csrf_hash()
+      ]);
+    } else {
+      echo json_encode([
+        'status' => 'error', 
+        'message' => 'Gagal menyimpan atau tidak ada data yang valid.'
+      ]);
+    }
+  }
 
-	/* ===== AJAX UNTUK CRUD PERTANYAAN ESAI (QUESTION) ===== */
+  public function delete_question($id)
+  {
+    if ($this->Pbl_esai_model->delete_question($id)) {
+       echo json_encode(['status' => 'success', 'message' => 'Soal berhasil dihapus.', 'csrf_hash' => $this->security->get_csrf_hash()]);
+    } else {
+       echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus soal.']);
+    }
+  }
 
-	/**
-	 * AJAX: Mengambil semua pertanyaan esai
-	 */
-	public function get_questions($essay_id)
-	{
-		$data = $this->Pbl_esai_model->get_questions($essay_id);
-		$this->output
-			->set_content_type('application/json')
-			->set_output(json_encode($data));
-	}
+  /* ==============================================
+     ENDPOINT 2: MANAJEMEN PENILAIAN (GRADING)
+     ============================================== */
 
-	/**
-	 * AJAX: Menyimpan (Create/Update) pertanyaan esai
-	 */
-	public function save_question()
-	{
-		$this->form_validation->set_rules('essay_id', 'Essay ID', 'required');
-		$this->form_validation->set_rules('question_number', 'Nomor Pertanyaan', 'required|numeric|greater_than[0]');
-		$this->form_validation->set_rules('question_text', 'Teks Pertanyaan', 'required|trim');
-		$this->form_validation->set_rules('weight', 'Bobot Nilai', 'required|numeric|greater_than[0]');
+  // Mengambil data siswa + jawaban mereka untuk tabel grading
+  public function get_grading_json($essay_id)
+  {
+    // Ambil detail esai dulu untuk tahu class_id nya
+    $essay = $this->Pbl_esai_model->get_essay_details($essay_id);
+    if (!$essay) {
+        echo json_encode([]); return;
+    }
 
-		if ($this->form_validation->run() === FALSE) {
-			$this->output
-				->set_content_type('application/json')
-				->set_output(json_encode(['status' => 'error', 'message' => validation_errors(), 'csrf_hash' => $this->security->get_csrf_hash()]));
-			return;
-		}
+    // Ambil data gabungan (Siswa + Jawaban)
+    $data = $this->Pbl_esai_model->get_class_students_with_submission($essay->class_id, $essay_id);
+    echo json_encode($data);
+  }
 
-		$id = $this->input->post('id'); // Bisa null untuk Add
-		
-		$payload = [
-			'essay_id' => $this->input->post('essay_id'),
-			'question_number' => $this->input->post('question_number'),
-			'question_text' => $this->input->post('question_text'),
-			'weight' => $this->input->post('weight')
-		];
+  public function save_grade()
+  {
+    $submission_id = $this->input->post('submission_id');
+    
+    // Validasi sederhana
+    if(empty($submission_id)) {
+      echo json_encode(['status' => 'error', 'message' => 'Data submission tidak ditemukan. Siswa mungkin belum mengumpulkan.']);
+      return;
+    }
 
-		$this->Pbl_esai_model->save_question($payload, $id);
+    $data = [
+      'grade'    => $this->input->post('grade'),
+      'feedback' => $this->input->post('feedback')
+    ];
 
-		$msg = $id ? 'Pertanyaan berhasil diperbarui.' : 'Pertanyaan baru berhasil ditambahkan.';
-		
-		echo json_encode([
-			'status' => 'success',
-			'message' => $msg,
-			'csrf_hash' => $this->security->get_csrf_hash()
-		]);
-	}
-
-	/**
-	 * AJAX: Menghapus pertanyaan esai
-	 */
-	public function delete_question()
-	{
-		$this->form_validation->set_rules('id', 'ID Pertanyaan', 'required');
-
-		if ($this->form_validation->run() === FALSE) {
-			$this->output
-				->set_content_type('application/json')
-				->set_output(json_encode(['status' => 'error', 'message' => validation_errors()]));
-			return;
-		}
-
-		$id = $this->input->post('id');
-		
-		if ($this->Pbl_esai_model->delete_question($id)) {
-			$msg = 'Pertanyaan berhasil dihapus.';
-			$status = 'success';
-		} else {
-			$msg = 'Gagal menghapus pertanyaan.';
-			$status = 'error';
-		}
-		
-		echo json_encode([
-			'status' => $status,
-			'message' => $msg,
-			'csrf_hash' => $this->security->get_csrf_hash()
-		]);
-	}
+    if ($this->Pbl_esai_model->save_feedback($submission_id, $data)) {
+      echo json_encode(['status' => 'success', 'message' => 'Nilai & Feedback berhasil disimpan.', 'csrf_hash' => $this->security->get_csrf_hash()]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Database error.']);
+    }
+  }
 	
 }
 

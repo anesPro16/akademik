@@ -1,60 +1,5 @@
 <style>
-/* --- Header --- */
-.pbl-header {
-  border-bottom: 1px solid #e5e7eb !important;
-  padding-bottom: 1rem !important;
-  margin-bottom: 1.5rem !important;
-}
 
-.pbl-badge {
-  font-size: .75rem !important;
-  letter-spacing: .5px !important;
-}
-
-
-/* --- Table --- */
-.table-responsive {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-#pblTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#pblTable thead th,
-#pblTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#pblTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#pblTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
-
-/* --- Buttons --- */
-.btn {
-  transition: all .2s ease !important;
-}
-
-.btn:hover {
-  transform: translateY(-1px) !important;
-}
-
-.btn-add-quiz {
-  box-shadow: 0 4px 12px rgba(13,110,253,.25) !important;
-}
-
-.btn-add-quiz:hover {
-  box-shadow: 0 6px 16px rgba(13,110,253,.35) !important;
-}
 
 .aksi{
   width: 20%;
@@ -63,10 +8,6 @@
 @media (max-width: 576px) {
   .card-header h5 {
     font-size: 1rem !important;
-  }
-
-  .btn-add-quiz {
-    font-size: .8rem !important;
   }
 
   .aksi{

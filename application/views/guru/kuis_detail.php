@@ -1,72 +1,3 @@
-<style>
-  /* --- Table --- */
-.table-responsive {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-#questionTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#questionTable thead th,
-#questionTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#questionTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#questionTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
-
-#submissionsTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#submissionsTable thead th,
-#submissionsTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#submissionsTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#submissionsTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
-
-.aksi{
-  width: 20%;
-}
-/* --- Mobile optimization --- */
-@media (max-width: 576px) {
-  .card-header h5 {
-    font-size: 1rem !important;
-  }
-
-  .btn-add-quiz {
-    font-size: .8rem !important;
-  }
-
-  .aksi{
-    width: 180px;
-  }
-}
-
-</style>
-
 <div class="container py-4">
 
   <!-- Header & Import/Export Buttons sama seperti sebelumnya ... -->
@@ -109,7 +40,7 @@
           <table class="table table-hover" id="questionTable">
             <thead>
               <tr>
-                <th style="width: 5%;">No</th>
+                <th width="6%">No</th>
                 <th>Pertanyaan</th>
                 <th style="width: 10%;">Jawaban</th>
                 <th style="width: 15%;">Aksi</th>
@@ -132,7 +63,7 @@
           <table class="table table-hover table-striped" id="submissionsTable">
             <thead class="table-light">
               <tr>
-                <th style="width: 5%">No</th>
+                <th width="6%">No</th>
                 <th>Siswa</th>
                 <th>Nilai</th>
                 <th>Waktu</th>

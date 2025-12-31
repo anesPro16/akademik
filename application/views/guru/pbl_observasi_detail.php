@@ -1,91 +1,48 @@
 <style>
-    /* --- Table --- */
-.table-responsive {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-#uploadsTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#uploadsTable thead th,
-#uploadsTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#uploadsTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#uploadsTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
-
-.aksi{
-  width: 20%;
-}
-/* --- Mobile optimization --- */
-@media (max-width: 576px) {
-  .card-header h5 {
-    font-size: 1rem !important;
-  }
-
-  .btn-add-quiz {
-    font-size: .8rem !important;
-  }
-
-  .aksi{
-    width: 180px;
-  }
-}
-
+	.aksi {width: 20%;}
 </style>
 
-<div class="container py-4">
+<div class="container-fluid">
 	<div class="d-flex justify-content-between align-items-center mb-3">
 		<div>
 			<small class="text-muted">Kelola upload dan penilaian siswa.</small>
 		</div>
-		<a href="<?= base_url($url_name . '/pbl/tahap3/' . $class_id) ?>" class="btn btn-secondary">
-			<i class="bi bi-arrow-left"></i> Kembali
-		</a>
+	</div>
+
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+		<a href="<?= base_url('guru/pbl/tahap3/' . $slot->class_id) ?>" class="btn btn-secondary">← Kembali</a>
 	</div>
 
 	<!-- Info Tugas -->
-	<div class="card shadow-sm mb-4 border-left-primary">
+	<!-- <div class="card shadow-sm mb-4 border-left-primary">
 		<div class="card-body">
 			<h5 class="card-title text-primary font-weight-bold"><?= htmlspecialchars($slot->title); ?></h5>
 			<p class="card-text"><?= nl2br(htmlspecialchars($slot->description)); ?></p>
 		</div>
-	</div>
+	</div> -->
 
-    <!-- Tabel Upload Siswa + Penilaian -->
-    <div class="card shadow-sm h-100">
-        <div class="card-header bg-white py-3">
-            <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-file-earmark-arrow-up"></i> Daftar Upload & Penilaian</h6>
-        </div>
-        <div class="card-body" id="observasiTableContainer">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle" id="uploadsTable" width="100%" cellspacing="0">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 5%;">No</th>
-                            <th>Nama Siswa & File</th>
-                            <th>File</th>
-                            <th>Status Nilai</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+	<!-- Tabel Upload Siswa + Penilaian -->
+	<div class="card shadow-sm h-100">
+		<div class="card-header bg-white py-3">
+			<h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-file-earmark-arrow-up"></i> Daftar Upload & Penilaian</h6>
+		</div>
+		<div class="card-body" id="observasiTableContainer">
+			<div class="table-responsive">
+				<table class="table table-hover align-middle" id="uploadsTable" width="100%" cellspacing="0">
+					<thead class="table-light">
+						<tr>
+							<th width="6%">No</th>
+							<th>Nama Siswa & File</th>
+							<th>File</th>
+							<th>Status Nilai</th>
+							<th class="aksi">Aksi</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- Modal Form Penilaian -->
@@ -100,12 +57,12 @@
 				<div class="modal-body">
 					<input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
 					
-                    <!-- ID Grade (Jika edit) -->
-                    <input type="hidden" name="id" id="gradeId">
-                    <!-- Slot ID -->
+					<!-- ID Grade (Jika edit) -->
+					<input type="hidden" name="id" id="gradeId">
+					<!-- Slot ID -->
 					<input type="hidden" name="observation_slot_id" value="<?= $slot->id; ?>">
-                    <!-- User ID (Diisi via JS) -->
-                    <input type="hidden" name="user_id" id="userIdInput">
+					<!-- User ID (Diisi via JS) -->
+					<input type="hidden" name="user_id" id="userIdInput">
 
 					<div class="mb-3">
 						<label class="form-label">Siswa</label>

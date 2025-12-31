@@ -128,7 +128,7 @@ const openPreview = (url) => {
       if (item.file_path) {
       	const fullUrl = `${window.BASE_URL}${item.file_path}`;
       	fileButton = `
-      	<button class="btn btn-sm btn-outline-info btn-preview" 
+      	<button class="btn btn-sm btn-info btn-preview" 
       	data-url="${fullUrl}" 
       	title="Lihat Materi">
       	<i class="bi bi-eye-fill"></i> Lihat

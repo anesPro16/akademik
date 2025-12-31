@@ -18,37 +18,48 @@ class Pbl_esai extends CI_Controller
 	}
 
 	/**
-	 * Halaman Detail Esai untuk Siswa (Menampilkan Pertanyaan & Form Jawab)
-	 */
-	public function detail($essay_id = null)
-	{
-		if (!$essay_id) redirect('siswa/pbl'); // Ganti ke halaman PBL Siswa
+  * Halaman Detail Esai untuk Siswa
+  */
+  public function detail($essay_id = null)
+  {
+    if (!$essay_id) redirect('siswa/pbl');
 
-		$essay = $this->Pbl_esai_model->get_essay_details($essay_id);
-		if (!$essay) show_404();
+    $essay = $this->Pbl_esai_model->get_essay_details($essay_id);
+    if (!$essay) show_404();
 
-		$submission = $this->Pbl_esai_model->get_student_submission($essay_id, $this->user_id);
-		$questions = $this->Pbl_esai_model->get_questions($essay_id);
+    // Ambil data submission siswa (jika ada)
+    $submission = $this->Pbl_esai_model->get_student_submission($essay_id, $this->user_id);
+    
+    $data['title'] = 'Jawab Esai: ' . $essay->title;
+    $data['essay'] = $essay;
+    $data['submission'] = $submission;
+    $data['class_id'] = $essay->class_id;
+    $data['user'] = $this->session->userdata();
 
-		$data['title'] = 'Jawab Esai: ' . $essay->title;
-		$data['essay'] = $essay;
-		$data['questions'] = $questions;
-		$data['submission'] = $submission; // Jawaban siswa saat ini (jika ada)
-		$data['class_id'] = $essay->class_id;
-		$data['user'] = $this->session->userdata();
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar');
+    $this->load->view('siswa/pbl_esai_detail', $data);
+    $this->load->view('templates/footer');
+  }
 
-		$this->load->view('templates/header', $data);
-		$this->load->view('siswa/pbl_esai_detail', $data);
-		$this->load->view('templates/footer');
-	}
+  /**
+   * Mengambil daftar pertanyaan
+   */
+  public function get_questions_json($essay_id)
+  {
+    $data = $this->Pbl_esai_model->get_questions($essay_id);
+    $this->output
+      ->set_content_type('application/json')
+      ->set_output(json_encode($data));
+  }
 
 	/**
 	 * AJAX: Menyimpan/Memperbarui Jawaban Siswa
 	 */
-	public function submit_answer()
+	public function save_submission()
 	{
-		$this->form_validation->set_rules('essay_id', 'Essay ID', 'required');
-		$this->form_validation->set_rules('submission_content', 'Jawaban Esai', 'required|trim');
+		$this->form_validation->set_rules('essay_id', 'ID Esai', 'required');
+    $this->form_validation->set_rules('submission_content', 'Jawaban', 'required|trim');
 
 		if ($this->form_validation->run() === FALSE) {
 			$this->output
@@ -58,7 +69,7 @@ class Pbl_esai extends CI_Controller
 		}
 
 		$essay_id = $this->input->post('essay_id');
-		$content = $this->input->post('submission_content');
+		$content  = $this->input->post('submission_content', TRUE);
 		$submission_id = $this->input->post('submission_id'); // ID Submission, bisa kosong/null
 
 		// Cek apakah esai ini ada
@@ -70,17 +81,28 @@ class Pbl_esai extends CI_Controller
 			return;
 		}
 
-		$success = $this->Pbl_esai_model->save_student_submission($essay_id, $this->user_id, $content, $submission_id);
+		// Cek apakah sudah dinilai? Jika sudah, tolak edit.
+    if ($submission_id) {
+      $existing = $this->Pbl_esai_model->get_student_submission($essay_id, $this->user_id);
+      if ($existing && $existing->grade !== null) {
+          echo json_encode(['status' => 'error', 'message' => 'Tugas sudah dinilai, tidak dapat diedit.']);
+          return;
+      }
+    }
 
-		if ($success) {
+    $save = $this->Pbl_esai_model->save_student_submission($essay_id, $this->user_id, $content, $submission_id);
+
+		if ($save) {
 			$msg = $submission_id ? 'Jawaban berhasil diperbarui.' : 'Jawaban berhasil dikirim.';
+			
 			// Ambil ulang data submission terbaru (opsional, untuk tampilan real-time)
-			$new_submission = $this->Pbl_esai_model->get_student_submission($essay_id, $this->user_id);
+
+			// $new_submission = $this->Pbl_esai_model->get_student_submission($essay_id, $this->user_id);
 
 			echo json_encode([
 				'status' => 'success',
 				'message' => $msg,
-				'data' => $new_submission,
+				// 'data' => $new_submission,
 				'csrf_hash' => $this->security->get_csrf_hash()
 			]);
 		} else {

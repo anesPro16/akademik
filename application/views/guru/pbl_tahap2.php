@@ -1,64 +1,6 @@
 <style>
 /* ===== PBL TAHAP 2 – UI + ANIMATION ENHANCEMENT ===== */
 
-
-/* --- Header --- */
-.pbl-header {
-  border-bottom: 1px solid #e5e7eb !important;
-  padding-bottom: 1rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-.pbl-badge {
-  font-size: .75rem !important;
-  letter-spacing: .5px !important;
-}
-
-
-/* --- Table --- */
-.table-responsive {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-#quizTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#quizTable thead th,
-#quizTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#quizTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#quizTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
-
-/* --- Buttons --- */
-.btn {
-  transition: all .2s ease !important;
-}
-
-.btn:hover {
-  transform: translateY(-1px) !important;
-}
-
-.btn-add-quiz {
-  box-shadow: 0 4px 12px rgba(13,110,253,.25) !important;
-}
-
-.btn-add-quiz:hover {
-  box-shadow: 0 6px 16px rgba(13,110,253,.35) !important;
-}
-
 /* --- Empty State --- */
 #quizEmptyState {
   border: 2px dashed #dee2e6 !important;
@@ -71,10 +13,10 @@
 }
 
 .aksi{
-  width: 20%;
+  width: 24%;
 }
 /* --- Mobile optimization --- */
-@media (max-width: 576px) {
+/*@media (max-width: 576px) {
   .card-header h5 {
     font-size: 1rem !important;
   }
@@ -86,7 +28,7 @@
   .aksi{
     width: 180px;
   }
-}
+}*/
 
 
 </style>
@@ -136,7 +78,7 @@
         <table class="table mb-0" id="quizTable">
           <thead class="table-light">
             <tr>
-              <th style="width:60px">No</th>
+              <th width="6%">No</th>
               <th>Judul</th>
               <th>Deskripsi</th>
               <!-- <th style="width:20%" class="aksi">Aksi</th> -->

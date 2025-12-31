@@ -1,120 +1,126 @@
-/**
- * pbl_esai_detail_siswa.js
- * Menangani pengiriman dan pembaruan jawaban esai siswa.
- */
+import CrudHandler from './crud_handler.js'; // Pastikan path relative benar sesuai folder structure
 
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // Asumsi dependensi: Bootstrap, SweetAlert2 (Swal)
 
-    const form = document.getElementById('submissionForm');
-    const submitButton = document.getElementById('submitButton');
-    const submissionIdField = document.getElementById('submissionId');
-    const statusText = document.getElementById('statusText');
-    const feedbackCard = document.getElementById('feedbackCard');
-    const feedbackContent = document.getElementById('feedbackContent');
-    const csrfName = window.CSRF_TOKEN_NAME;
-    let csrfHash = document.querySelector(`input[name="${csrfName}"]`).value;
-    const saveUrl = `${window.BASE_URL}siswa/pbl_esai/submit_answer`;
-    
-    // --- Helper Functions ---
-    
-    const showToast = (icon, title) => {
-        Swal.fire({
-            icon: icon,
-            title: title,
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
+    const ESSAY_ID = document.getElementById('currentEssayId').value;
+    const csrfEl = document.querySelector('input[name="' + window.CSRF_TOKEN_NAME + '"]');
+
+    const csrfConfig = {
+        tokenName: window.CSRF_TOKEN_NAME,
+        tokenHash: csrfEl ? csrfEl.value : ''
     };
 
-    const updateCsrfToken = (newHash) => {
-        if (newHash) {
-            csrfHash = newHash;
-            // Update semua input CSRF di halaman
-            document.querySelectorAll(`input[name="${csrfName}"]`).forEach(token => {
-                token.value = newHash;
-            });
-        }
-    };
+  // ==========================================
+  // 1. INSTANCE CRUD: DAFTAR PERTANYAAN (READ ONLY)
+  // ==========================================
+  const questionConfig = {
+    baseUrl: window.BASE_URL,
+    entityName: 'Soal',
+    // Mode Read Only: Tidak perlu modalId, formId, btnAddId untuk Create/Edit/Delete
+    readOnly: true, 
+    
+    tableId: 'questionTable',
+    tableParentSelector: '#questionTableContainer',
+    
+    csrf: csrfConfig,
+    urls: {
+      // Menggunakan endpoint siswa
+      load: `siswa/pbl_esai/get_questions_json/${ESSAY_ID}`,
+    },
 
-    const updateStatusUI = (submission) => {
-        const grade = submission.grade;
-        const updatedAt = new Date(submission.updated_at).toLocaleString('id-ID', {
-            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
+    // Mapping Data JSON ke Tabel
+    dataMapper: (q, i) => {
+        // Tampilkan pertanyaan lengkap
+        return [q.question_number, q.question_text];
+    }
+  };
 
-        if (grade !== null) {
-            statusText.innerHTML = `
-                <span class="text-success fw-bold">Sudah Dinilai!</span> | Nilai Anda: 
-                <span class="badge bg-success fs-6">${grade}</span> | Terakhir Diperbarui: ${updatedAt}
-            `;
-            if (submission.feedback) {
-                feedbackContent.innerText = submission.feedback;
-                feedbackCard.style.display = 'block';
-            }
-        } else {
-            statusText.innerHTML = `
-                <span class="text-warning fw-bold">Sudah Dikirim!</span> Menunggu penilaian guru. | Terakhir Dikirim: ${updatedAt}
-            `;
-            feedbackCard.style.display = 'none';
-        }
-    };
+  // Inisialisasi Tabel Soal
+  new CrudHandler(questionConfig).init();
 
-    // --- Submission Logic ---
+  // ==========================================
+  // 2. HANDLER FORMULIR JAWABAN (MANUAL)
+  // ==========================================
+  const btnOpenModal = document.getElementById('btnOpenAnswerModal');
+  const answerModalEl = document.getElementById('answerModal');
+  const answerForm = document.getElementById('answerForm');
+  
+  // Inisialisasi Modal Bootstrap
+  let answerModalInstance = null;
+  if (answerModalEl) {
+    answerModalInstance = new bootstrap.Modal(answerModalEl);
+  }
 
-    form.addEventListener('submit', async (e) => {
+  // A. Event Klik Tombol "Kerjakan/Edit"
+  if (btnOpenModal) {
+    btnOpenModal.addEventListener('click', () => {
+        const id = btnOpenModal.getAttribute('data-id');
+        const content = btnOpenModal.getAttribute('data-content');
+
+      // Populate Form
+      document.getElementById('submissionId').value = id;
+      document.getElementById('submissionContent').value = content;
+
+      // Buka Modal
+      answerModalInstance.show();
+    });
+  }
+
+  // B. Event Submit Form
+  if (answerForm) {
+    answerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...';
+      // Ambil tombol submit untuk loading state
+      const submitBtn = answerForm.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengirim...';
 
-        const formData = new FormData(form);
-        formData.set(csrfName, csrfHash); // Setel hash CSRF
+      const formData = new FormData(answerForm);
+      
+      // Tambahkan CSRF Token manual karena ini fetch custom
+      const currentCsrfToken = document.querySelector('input[name="' + window.CSRF_TOKEN_NAME + '"]').value;
+      formData.append(window.CSRF_TOKEN_NAME, currentCsrfToken);
 
-        try {
-            // Fetch API untuk mengirim data
-            const response = await fetch(saveUrl, {
-                method: 'POST',
-                body: formData
-            });
+      try {
+        const response = await fetch(window.BASE_URL + 'siswa/pbl_esai/save_submission', {
+            method: 'POST',
+            body: formData
+        });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+        const result = await response.json();
 
-            const result = await response.json();
-            updateCsrfToken(result.csrf_hash);
-
-            if (result.status === 'success') {
-                showToast('success', result.message);
-                
-                // Perbarui ID submission (jika ini adalah kiriman pertama)
-                if (!submissionIdField.value && result.data && result.data.id) {
-                    submissionIdField.value = result.data.id;
-                }
-                
-                // Perbarui status UI
-                if (result.data) {
-                    updateStatusUI(result.data);
-                }
-
-            } else {
-                Swal.fire('Gagal!', result.message, 'error');
-            }
-
-        } catch (error) {
-            console.error('Submission Error:', error);
-            Swal.fire('Error', 'Terjadi kesalahan saat mengirim jawaban.', 'error');
-        } finally {
-            submitButton.disabled = false;
-            submitButton.innerHTML = '<i class="bi bi-send-fill"></i> Kirim Jawaban';
+        // Update CSRF Token di halaman agar request berikutnya valid
+        if (result.csrf_hash) {
+            const tokens = document.querySelectorAll(`input[name="${window.CSRF_TOKEN_NAME}"]`);
+            tokens.forEach(t => t.value = result.csrf_hash);
         }
-    });
 
-    // Catatan: CrudHandler tidak digunakan karena ini bukan manajemen data tabel, 
-    // melainkan operasi formulir tunggal (Create/Update).
+        if (result.status === 'success') {
+            answerModalInstance.hide();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: result.message,
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.reload(); // Reload untuk update status UI
+              });
+
+        } else {
+            Swal.fire('Gagal', result.message, 'error');
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Terjadi kesalahan koneksi.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+      }
+    });
+  }
 });

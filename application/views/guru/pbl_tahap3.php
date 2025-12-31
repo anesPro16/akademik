@@ -1,59 +1,7 @@
 <style>
-/* --- Header --- */
-.pbl-header {
-  border-bottom: 1px solid #e5e7eb !important;
-  padding-bottom: 1rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-.pbl-badge {
-  font-size: .75rem !important;
-  letter-spacing: .5px !important;
-}
-
-/* --- Table --- */
-.table-responsive {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-#observasiTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#observasiTable thead th,
-#observasiTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#observasiTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#observasiTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
 
 .aksi{
   width: 27%;
-}
-/* --- Mobile optimization --- */
-@media (max-width: 576px) {
-  .card-header h5 {
-    font-size: 1rem !important;
-  }
-
-  .btn-add-quiz {
-    font-size: .8rem !important;
-  }
-
-  .aksi{
-    width: 180px;
-  }
 }
 
 </style>
@@ -95,7 +43,7 @@
         <table class="table mb-0" id="observasiTable">
           <thead class="table-light">
             <tr>
-              <th style="width:60px">No</th>
+              <th width="6%">No</th>
               <th>Judul</th>
               <th>Deskripsi</th>
               <th class="aksi">Aksi</th>

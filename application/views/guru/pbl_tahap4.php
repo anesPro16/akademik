@@ -1,60 +1,8 @@
 <style>
-/* --- Header --- */
-.pbl-header {
-  border-bottom: 1px solid #e5e7eb !important;
-  padding-bottom: 1rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-.pbl-badge {
-  font-size: .75rem !important;
-  letter-spacing: .5px !important;
-}
-
-/* --- Table --- */
-.table-responsive {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-#esaiTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#esaiTable thead th,
-#esaiTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#esaiTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#esaiTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
-
-.aksi{
-  width: 25%;
-}
-/* --- Mobile optimization --- */
-@media (max-width: 576px) {
-  .card-header h5 {
-    font-size: 1rem !important;
-  }
-
-  .btn-add-quiz {
-    font-size: .8rem !important;
-  }
 
   .aksi{
-    width: 180px;
+    width: 25%;
   }
-}
 
 </style>
 
@@ -66,9 +14,19 @@
       <a href="<?= base_url($url_name . '/pbl/tahap3/' . $class_id) ?>" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left"></i>Tahap 3
       </a>
-      <a href="<?= base_url($url_name . '/pbl/tahap5/' . $class_id); ?>" class="btn btn-primary btn-sm">
+      <?php if ($url_name == 'guru'): ?>
+        <a href="<?= base_url('exam/index/' . $class_id); ?>" class="btn btn-primary btn-sm">
+          <i class="bi bi-list-task"></i>Ujian
+        </a>
+
+      <?php else: ?>
+        <a href="<?= base_url('exam/student_list/' . $class_id); ?>" class="btn btn-primary btn-sm">
+          <i class="bi bi-list-task"></i>Ujian
+        </a>
+      <?php endif ?>
+      <!-- <a href="<?= base_url($url_name . '/pbl/tahap5/' . $class_id); ?>" class="btn btn-primary btn-sm">
         <i class="bi bi-list-task"></i>Tahap 5
-      </a>
+      </a> -->
     </div>
   </div>
 

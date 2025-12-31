@@ -1,60 +1,8 @@
 <style>
-/* --- Header --- */
-.pbl-header {
-  border-bottom: 1px solid #e5e7eb !important;
-  padding-bottom: 1rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-.pbl-badge {
-  font-size: .75rem !important;
-  letter-spacing: .5px !important;
-}
-
-/* --- Table --- */
-.table-responsive {
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-#rekapTable {
-  min-width: 720px !important; /* trigger horizontal scroll on mobile */
-  border: 1px solid #dee2e6 !important;
-}
-
-#rekapTable thead th,
-#rekapTable tbody td {
-  border: 1px solid #dee2e6 !important;
-  vertical-align: middle !important;
-  transition: background-color .2s ease !important;
-}
-
-#rekapTable tbody tr {
-  transition: background-color .2s ease, transform .15s ease !important;
-}
-
-#rekapTable tbody tr:hover {
-  background-color: #f8f9fa !important;
-  transform: scale(1.002) !important;
-}
-
-.aksi{
-  width: 25%;
-}
-/* --- Mobile optimization --- */
-@media (max-width: 576px) {
-  .card-header h5 {
-    font-size: 1rem !important;
-  }
-
-  .btn-add-quiz {
-    font-size: .8rem !important;
-  }
 
   .aksi{
-    width: 180px;
+    width: 25%;
   }
-}
 
 </style>
 
