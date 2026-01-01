@@ -9,7 +9,7 @@
                 
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <img src="<?= base_url('assets/img/exam_illustration.svg') ?>" alt="Exam" style="height: 150px; opacity: 0.8;" class="img-fluid mb-3">
+                        <img src="<?= base_url('assets/img/news-4.jpg') ?>" alt="Exam" style="height: 150px; opacity: 0.8;" class="img-fluid mb-3">
                         <p class="text-muted">Silakan baca detail ujian di bawah ini sebelum memulai.</p>
                     </div>
 

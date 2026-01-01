@@ -87,34 +87,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. DATA MAPPER: Mengubah JSON dari server ke Baris Tabel
         dataMapper: (item, index) => {
-            // Link Detail ke halaman Soal
+            // URL Link
             const detailUrl = `${window.BASE_URL}exam/questions/${item.exam_id}`;
+            const resultUrl = `${window.BASE_URL}exam/result/${item.exam_id}`; // URL ke Monitoring Hasil
+
+            // --- A. LOGIKA STATUS ---
+            // Cek is_active dari database (pastikan controller mengirim field ini)
+            const isActive = parseInt(item.is_active) === 1; 
+            const statusBadge = isActive 
+                ? '<span class="badge bg-success">Aktif</span>' 
+                : '<span class="badge bg-secondary">Non-Aktif</span>';
+
+            // --- B. TOMBOL AKSI ---
             
-            const btnDetail = `<a href="${detailUrl}" class="btn btn-sm btn-info text-dark me-1">
-                <i class="bi bi-list-task"></i> Soal
+            // 1. Tombol Soal (Detail)
+            const btnDetail = `<a href="${detailUrl}" class="btn btn-sm btn-info text-white me-1" title="Kelola Soal">
+                <i class="bi bi-list-task"></i>
             </a>`;
 
+            // 2. Tombol Hasil (Monitoring) - BARU
+            const btnResult = `<a href="${resultUrl}" class="btn btn-sm btn-primary me-1" title="Monitoring Nilai">
+                <i class="bi bi-bar-chart-line"></i>
+            </a>`;
+
+            // 3. Tombol Edit
             const btnEdit = `<button type="button" class="btn btn-sm btn-warning btn-edit me-1" 
                 data-id="${item.exam_id}"
                 data-exam_name="${item.exam_name}"
                 data-type="${item.type}"
                 data-start_time="${item.start_time}"
-                data-end_time="${item.end_time}">
+                data-end_time="${item.end_time}"
+                title="Edit Ujian">
                 <i class="bi bi-pencil-square"></i>
             </button>`;
 
+            // 4. Tombol Hapus
             const btnDelete = `<button type="button" class="btn btn-sm btn-danger btn-delete" 
                 data-id="${item.exam_id}" 
-                data-exam_name="${item.exam_name}">
+                data-exam_name="${item.exam_name}"
+                title="Hapus Ujian">
                 <i class="bi bi-trash"></i>
             </button>`;
 
+            // --- C. RETURN ARRAY (Urutan harus sama dengan <th> di HTML) ---
             return [
-                index + 1,
-                `<span class="fw-bold">${item.exam_name}</span>`,
-                `<span class="badge bg-${item.type === 'UTS' ? 'primary' : 'success'}">${item.type}</span>`,
-                `<small>Mulai: ${formatForDisplay(item.start_time)}<br>Selesai: ${formatForDisplay(item.end_time)}</small>`,
-                `<div class="d-flex">${btnDetail} ${btnEdit} ${btnDelete}</div>`
+                index + 1,                                              // Kolom 1: #
+                `<span class="fw-bold">${item.exam_name}</span>`,       // Kolom 2: Mata Pelajaran
+                `<span class="badge bg-${item.type === 'UTS' ? 'primary' : 'success'}">${item.type}</span>`, // Kolom 3: Jenis
+                `<small>Mulai: ${formatForDisplay(item.start_time)}<br>Selesai: ${formatForDisplay(item.end_time)}</small>`, // Kolom 4: Waktu
+                statusBadge,                                            // Kolom 5: Status (BARU)
+                `<div class="d-flex">${btnResult} ${btnDetail} ${btnEdit} ${btnDelete}</div>` // Kolom 6: Aksi (Ditambah btnResult)
             ];
         },
 

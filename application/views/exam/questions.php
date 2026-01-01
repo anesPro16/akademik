@@ -2,7 +2,7 @@
 	<div class="card-header d-flex justify-content-between align-items-center">
 		<h5 class="mb-0">Soal Ujian: <?= $exam->exam_name ?></h5>
 		<div>
-			<a href="<?= base_url('guru/pbl/exam') ?>" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Kembali</a>
+			<a href="<?= base_url('exam/index/' . $exam->class_id); ?>" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Kembali</a>
 			<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#bulkQuestionModal">
 				<i class="bi bi-plus-lg"></i> Tambah Soal
 			</button>
