@@ -1,108 +1,174 @@
 import CrudHandler from '../crud_handler.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * Class Custom untuk Menangani Tampilan Laporan Siswa
+ * Mengubah data 1 Siswa menjadi Baris-baris Mata Pelajaran
+ */
+ class StudentReportHandler extends CrudHandler {
 
-    const csrfEl = document.querySelector('input[name="' + window.CSRF_TOKEN_NAME + '"]');
-    const CURRENT_CLASS_ID = window.CURRENT_CLASS_ID || null;
-    const CURRENT_USER_ID = document.getElementById('currentUserId').value; 
+ 	async loadData() {
+ 		const tbody = document.getElementById('nilaiTableBody');
+ 		const tfoot = document.getElementById('nilaiTableFoot');
+ 		const teacherRefEl = document.getElementById('viewTeacherReflection');
+ 		const studentFeedEl = document.getElementById('viewStudentFeedback');
 
-    if (!CURRENT_CLASS_ID) {
-        console.error('CLASS ID tidak ditemukan.');
-        return;
-    }
+ 		tbody.innerHTML = '<tr><td colspan="7" class="p-3">Sedang memuat data...</td></tr>';
 
-    const csrfConfig = {
-        tokenName: window.CSRF_TOKEN_NAME,
-        tokenHash: csrfEl ? csrfEl.value : ''
-    };
+ 		try {
+ 			const url = this.config.baseUrl + this.config.urls.load;
+ 			const response = await fetch(url);
+            const data = await response.json(); // Data ini berupa Object (1 baris DB), bukan Array
 
-    const refleksiConfig = {
-        baseUrl: window.BASE_URL,
-        entityName: 'Refleksi',
-        
-        // PENTING: readOnly false agar fitur modal handler aktif
-        readOnly: false, 
+            tbody.innerHTML = ''; 
+            tfoot.innerHTML = '';
 
-        // ID Elemen DOM
-        modalId: 'refleksiModal',
-        formId: 'refleksiForm', 
-        
-        // --- PERBAIKAN DISINI ---
-        // Tambahkan modalLabelId agar CrudHandler bisa menemukan elemen judul modal
-        modalLabelId: 'refleksiModalLabel', 
-        // ------------------------
-
-        tableId: 'rekapTable',
-        btnAddId: null, 
-        
-        tableParentSelector: '.card-body', 
-
-        csrf: csrfConfig,
-        
-        urls: {
-            load: `siswa/pbl/get_my_recap/${CURRENT_CLASS_ID}`,
-            save: 'siswa/pbl/dummy_save', // Dummy URL agar tidak error
-            delete: null 
-        },
-
-        modalTitles: { 
-            add: 'Detail Refleksi', 
-            edit: 'Detail Refleksi' 
-        },
-
-        // --- MAPPING DATA JSON KE TABEL HTML ---
-        dataMapper: (student, index) => {
-            const scoreQuiz = (parseFloat(student.quiz_score) || 0) + (parseFloat(student.tts_score) || 0);
-            const scoreObs  = parseFloat(student.obs_score) || 0;
-            const scoreEssay = parseFloat(student.essay_score) || 0;
-            const totalScore = scoreQuiz + scoreObs + scoreEssay;
-
-            let actionBtn = '';
-            
-            // Cek apakah baris ini milik user yang sedang login?
-            if (student.user_id === CURRENT_USER_ID) {
-                const hasReflection = (student.teacher_reflection && student.teacher_reflection.trim() !== "") || 
-                                      (student.student_feedback && student.student_feedback.trim() !== "");
-                
-                if (hasReflection) {
-                    actionBtn = `
-                        <button type="button" class="btn btn-sm btn-success btn-edit" 
-                            data-reflection="${student.teacher_reflection || '-'}"
-                            data-feedback="${student.student_feedback || '-'}">
-                            <i class="bi bi-envelope-paper"></i> Lihat Refleksi
-                        </button>
-                    `;
-                } else {
-                    actionBtn = `<span class="badge bg-secondary text-white fw-normal">Belum ada feedback</span>`;
-                }
-            } else {
-                actionBtn = `<span class="text-muted small">-</span>`;
+            if (!data) {
+            	tbody.innerHTML = '<tr><td colspan="7" class="text-danger">Gagal memuat data.</td></tr>';
+            	return;
             }
 
-            const nameDisplay = (student.user_id === CURRENT_USER_ID) 
-                ? `<span class="fw-bold text-success">${student.student_name} (Anda)</span>` 
-                : student.student_name;
+            // 1. Tampilkan Refleksi Guru (jika ada)
+            if(teacherRefEl) teacherRefEl.textContent = data.teacher_reflection || '- Belum ada catatan -';
+            if(studentFeedEl) studentFeedEl.textContent = data.student_feedback || '- Belum ada feedback -';
 
-            return [
-                index + 1,
-                nameDisplay,
-                `<span class="badge bg-secondary">${scoreQuiz}</span>`,
-                `<span class="badge bg-info text-dark">${scoreObs}</span>`,
-                `<span class="badge bg-success">${scoreEssay}</span>`,
-                `<span class="fw-bold text-primary fs-6">${totalScore}</span>`,
-                actionBtn
-            ];
-        },
+            // 2. Parsing Data String dari Database
+            const examScores = this.parseExamScores(data.exam_data);
+            const quizScores = this.calculateAverageBySubject(data.quiz_data);
+            const obsScores  = this.calculateAverageBySubject(data.obs_data);
+            const essayScores = this.calculateAverageBySubject(data.essay_data);
 
-        // --- POPULATE MODAL VIEW ---
-        formPopulator: (form, data) => {
-            const viewReflection = document.getElementById('viewTeacherReflection');
-            const viewFeedback = document.getElementById('viewStudentFeedback');
+            // Variable untuk menghitung Grand Total Rata-rata
+            let grandTotalSum = 0;
+            let grandTotalCount = 0;
 
-            if (viewReflection) viewReflection.textContent = data.reflection;
-            if (viewFeedback) viewFeedback.textContent = data.feedback;
+            // 3. Loop Mata Pelajaran (EXAM_SUBJECTS dari PHP) -> Menjadi Baris Tabel
+            const subjects = window.EXAM_SUBJECTS || [];
+            
+            subjects.forEach(subject => {
+            	const tr = document.createElement('tr');
+
+                // Ambil nilai per komponen
+                const valUTS   = (examScores[subject] && examScores[subject]['UTS']) ? parseFloat(examScores[subject]['UTS']) : 0;
+                const valUAS   = (examScores[subject] && examScores[subject]['UAS']) ? parseFloat(examScores[subject]['UAS']) : 0;
+                const valQuiz  = quizScores[subject] ? parseFloat(quizScores[subject]) : 0;
+                const valObs   = obsScores[subject] ? parseFloat(obsScores[subject]) : 0;
+                const valEssay = essayScores[subject] ? parseFloat(essayScores[subject]) : 0;
+
+                // Array nilai valid (yang tidak 0/kosong) untuk hitung rata-rata baris
+                // Asumsi: Jika nilai 0, tetap dihitung sebagai pembagi jika ingin ketat. 
+                // Disini saya anggap jika 0 berarti belum dinilai, jadi tidak merusak rata-rata.
+                // Jika ingin 0 tetap dihitung, hapus filter > 0.
+                let components = [valUTS, valUAS, valQuiz, valObs, valEssay];
+                let validComponents = components.filter(v => v > 0);
+                
+                let rowAvg = 0;
+                if (validComponents.length > 0) {
+                	let sum = validComponents.reduce((a, b) => a + b, 0);
+                	rowAvg = (sum / validComponents.length);
+
+                    // Masukkan ke Grand Total
+                    grandTotalSum += rowAvg;
+                    grandTotalCount++;
+                  }
+
+                // Helper display: Jika 0 tampilkan "-"
+                const disp = (num) => num > 0 ? num : '-';
+                const dispAvg = (num) => num > 0 ? num.toFixed(0) : '-'; // Bulatkan rata-rata
+
+                tr.innerHTML = `
+                <td class="text-left fw-bold">${subject}</td>
+                <td>${disp(valUTS)}</td>
+                <td>${disp(valUAS)}</td>
+                <td>${disp(valQuiz)}</td>
+                <td>${disp(valObs)}</td>
+                <td>${disp(valEssay)}</td>
+                <td class="fw-bold bg-light">${dispAvg(rowAvg)}</td>
+                `;
+                tbody.appendChild(tr);
+              });
+
+            // 4. Baris Footer (Total Rata-rata Keseluruhan)
+            let finalAvg = 0;
+            if (grandTotalCount > 0) {
+            	finalAvg = (grandTotalSum / grandTotalCount).toFixed(0);
+            }
+
+            tfoot.innerHTML = `
+            <tr class="bg-total">
+            <td colspan="6" class="text-end">Rata-Rata Total</td>
+            <td>${finalAvg}</td>
+            </tr>
+            `;
+
+          } catch (error) {
+          	console.error('Error loading data:', error);
+          	tbody.innerHTML = '<tr><td colspan="7" class="text-danger p-3">Terjadi kesalahan sistem.</td></tr>';
+          }
         }
-    };
 
-    new CrudHandler(refleksiConfig).init();
-});
+    // --- Helper Parsing (Sama seperti Teacher View) ---
+    
+    calculateAverageBySubject(rawString) {
+    	if (!rawString) return {};
+    	let sums = {};
+    	let counts = {};
+    	rawString.split('||').forEach(entry => {
+    		const parts = entry.split('::');
+    		if (parts.length === 2) {
+    			const [subj, score] = parts;
+    			const val = parseFloat(score);
+    			if (!isNaN(val)) {
+    				if (!sums[subj]) { sums[subj] = 0; counts[subj] = 0; }
+    				sums[subj] += val;
+    				counts[subj]++;
+    			}
+    		}
+    	});
+    	let avgs = {};
+        Object.keys(sums).forEach(k => avgs[k] = (sums[k] / counts[k]).toFixed(2)); // return string 2 decimal
+        return avgs;
+      }
+
+      parseExamScores(rawString) {
+      	if (!rawString) return {};
+      	let exams = {};
+      	rawString.split('||').forEach(entry => {
+      		const parts = entry.split('::');
+      		if (parts.length === 3) {
+      			const [subj, type, score] = parts;
+      			if (!exams[subj]) exams[subj] = {};
+      			exams[subj][type] = score;
+      		}
+      	});
+      	return exams;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    	const csrfEl = document.querySelector('input[name="' + window.CSRF_TOKEN_NAME + '"]');
+    	const CURRENT_CLASS_ID = window.CURRENT_CLASS_ID;
+
+    	const csrfConfig = {
+    		tokenName: window.CSRF_TOKEN_NAME,
+    		tokenHash: csrfEl ? csrfEl.value : ''
+    	};
+
+    	const config = {
+    		baseUrl: window.BASE_URL,
+        // Config ini dummy karena kita override loadData sepenuhnya
+        entityName: 'Laporan',
+        modalId: null, formId: null, modalLabelId: null, tableId: nilaiTable,
+        
+        csrf: csrfConfig,
+        urls: {
+        	load: `siswa/laporan/get_my_recap/${CURRENT_CLASS_ID}`,
+        	save: null, delete: null 
+        },
+        
+        // Data Mapper tidak dipakai karena kita override loadData
+        dataMapper: () => [], 
+        formPopulator: () => {}
+      };
+
+      new StudentReportHandler(config).init();
+    });

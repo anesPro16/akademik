@@ -20,7 +20,7 @@
                                     <th>Nama Kelas</th>
                                     <th>Kode Kelas</th>
                                     <th>Guru Pengampu</th>
-                                    <th style="width: 20%;">Aksi</th>
+                                    <th width="29%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>

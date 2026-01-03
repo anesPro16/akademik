@@ -48,7 +48,7 @@
 			<h5 class="mb-0 text-primary"><?= $title ?></h5>
 			<small class="text-muted">Kelas: <?= $exam->exam_name ?></small>
 		</div>
-		<a href="<?= base_url('exam/index/'.$exam->class_id) ?>" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Kembali</a>
+		<a href="<?= base_url('exam/management/'.$exam->class_id) ?>" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Kembali</a>
 	</div>
 	<div class="card-body">
 		<div class="table-responsive">

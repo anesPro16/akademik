@@ -6,18 +6,18 @@
 
 <div class="container-fluid py-4">
     <div class="d-flex gap-2">
-      <a href="<?= base_url($url_name . '/pbl/tahap4/' . $class_id) ?>" class="btn btn-outline-secondary btn-sm">
+      <!-- <a href="</?= base_url($url_name . '/pbl/tahap4/' . $class_id) ?>" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left"></i>Tahap 4
-      </a>
+      </a> -->
       <?php if ($url_name == 'guru'): ?>
         <a href="<?= base_url('exam/index/' . $class_id); ?>" class="btn btn-primary btn-sm">
           <i class="bi bi-list-task"></i>Ujian
         </a>
 
       <?php else: ?>
-         <a href="<?= base_url($url_name . '/pbl/tahap5/' . $class_id); ?>" class="btn btn-primary btn-sm">
+         <!-- <a href="</?= base_url($url_name . '/pbl/tahap5/' . $class_id); ?>" class="btn btn-primary btn-sm">
         <i class="bi bi-list-task"></i>Tahap 5
-      </a>
+      </a> -->
       <?php endif ?>
     </div>
     <div class="card border-0 shadow-sm">

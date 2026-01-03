@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     formPopulator: IS_ADMIN_OR_GURU ? (form, data) => {
       form.querySelector('#quizId').value = data.id;
       form.querySelector('#quizTitle').value = data.title;
-      form.querySelector('#quizDescription').value = data.description || '';
+      // form.querySelector('#quizDescription').value = data.description || '';
+      form.querySelector('select[name="description"]').value = data.description;
     } : null,
     onAdd: IS_ADMIN_OR_GURU ? (form) => { form.reset(); form.querySelector('#quizClassId').value = CURRENT_CLASS_ID; } : null
   };

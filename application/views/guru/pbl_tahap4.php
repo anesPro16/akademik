@@ -55,7 +55,7 @@
             <tr>
               <th style="width:60px">No</th>
               <th>Judul</th>
-              <th>Deskripsi</th>
+              <th>Mata Pelajaran</th>
               <th class="aksi">Aksi</th>
             </tr>
           </thead>
@@ -85,8 +85,15 @@
             <input type="text" name="title" id="esaiTitle" class="form-control" required>
           </div>
           <div class="mb-3">
-            <label for="esaiDescription" class="form-label">Deskripsi / Instruksi Esai</label>
-            <textarea name="description" id="esaiDescription" class="form-control" rows="5"></textarea>
+            <!-- <label for="esaiDescription" class="form-label">Deskripsi / Instruksi Esai</label>
+            <textarea name="description" id="esaiDescription" class="form-control" rows="5"></textarea> -->
+            <label class="form-label">Mata Pelajaran</label>
+            <select name="description" id="description" class="form-select" required>
+              <option value="">-- Pilih Mapel --</option>
+              <?php foreach ($subjects as $sub) : ?>
+                <option value="<?= $sub ?>"><?= $sub ?></option>
+              <?php endforeach; ?>
+            </select>
           </div>
         </div>
         <div class="modal-footer bg-light">

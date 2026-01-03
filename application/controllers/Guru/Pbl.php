@@ -127,6 +127,8 @@ class Pbl extends CI_Controller
     $role_id = $this->session->userdata('role_id');    
     $data['is_admin_or_guru'] = $this->User_model->check_is_teacher($role_id);
 
+    $data['subjects'] = ['Matematika', 'IPA', 'IPS', 'Bahasa Indonesia', 'Bahasa Inggris', 'PPKN'];
+
 	  $this->load->view('templates/header', $data);
 	  $this->load->view('guru/pbl_tahap2', $data);
 	  $this->load->view('templates/footer');
@@ -190,86 +192,6 @@ class Pbl extends CI_Controller
   }
 
 
-	/*  CRUD TTS  */
-	public function get_tts($class_id)
-	{
-	  $data = $this->Pbl_tahap2_model->get_tts($class_id);
-	  $this->output
-         ->set_content_type('application/json')
-         ->set_output(json_encode($data));
-	}
-
-	public function save_tts()
-	{
-    $this->form_validation->set_rules('grid_data', 'Data Grid', 'required|trim|numeric', [
-      'required' => 'Data Grid wajib diisi!',
-    ]);
-
-    if ($this->form_validation->run() === FALSE) {
-      $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode(['status' => 'error', 'message' => validation_errors()]));
-      return;
-    }
-
-    $grid_val = (int)$this->input->post('grid_data');
-    // Cek 3: Minimal 8
-    if ($grid_val < 8) {
-      $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode(['status' => 'error', 'message' => 'Ukuran Grid minimal adalah 8.']));
-      return;
-    }
-    // Cek 4: Maksimal 25
-    if ($grid_val > 25) {
-      $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode(['status' => 'error', 'message' => 'Ukuran Grid maksimal adalah 25.']));
-      return;
-    }
-
-	  $payload = [
-	      'class_id' => $this->input->post('class_id'),
-	      'title' => $this->input->post('title'),
-	      'grid_data' => $this->input->post('grid_data')
-	  ];
-	  $id = $this->input->post('id');
-	  if ($id) {
-      $getTts = $this->Pbl_tts_model->get_tts_by_id($id);
-      if (!$getTts) {
-        echo json_encode(['status'=>'error','message'=>'Teka teki tidak ada!', 'csrf_hash' => $this->security->get_csrf_hash()]);
-        return;
-      }
-	      $this->Pbl_tahap2_model->update_tts($id, $payload);
-	      $msg = 'TTS diperbarui';
-	  } else {
-	      $payload['id'] = generate_ulid();
-	      $this->Pbl_tahap2_model->insert_tts($payload);
-	      $msg = 'TTS ditambahkan';
-	  }
-	  echo json_encode([
-      'status' => 'success',
-      'message' => $msg,
-      'csrf_hash' => $this->security->get_csrf_hash()
-    ]);
-	}
-
-	public function delete_tts($id)
-	{
-    $getTts = $this->Pbl_tts_model->get_tts_by_id($id);
-    if (!$getTts) {
-      echo json_encode(['status'=>'error','message'=>'Gagal hapus teka teki!', 'csrf_hash' => $this->security->get_csrf_hash()]);
-      return;
-    }
-
-	  $this->Pbl_tahap2_model->delete_tts($id);
-	  echo json_encode([
-      'status' => 'success',
-      'message' => 'TTS dihapus!',
-      'csrf_hash' => $this->security->get_csrf_hash()
-    ]);
-	}
-
   /**
    *  Halaman utama untuk Tahap 3
    */
@@ -286,6 +208,8 @@ class Pbl extends CI_Controller
     $data['url_name'] = 'guru';
     $role_id = $this->session->userdata('role_id');    
     $data['is_admin_or_guru'] = $this->User_model->check_is_teacher($role_id);
+
+    $data['subjects'] = ['Matematika', 'IPA', 'IPS', 'Bahasa Indonesia', 'Bahasa Inggris', 'PPKN'];
 
     $this->load->view('templates/header', $data);
     $this->load->view('guru/pbl_tahap3', $data);
@@ -360,72 +284,6 @@ class Pbl extends CI_Controller
     ]);
   }
 
-  /*   CRUD FORUM DISKUSI  */
-  public function get_discussions($class_id)
-  {
-    $data = $this->Pbl_tahap3_model->get_discussions($class_id);
-    $this->output
-      ->set_content_type('application/json')
-      ->set_output(json_encode($data));
-  }
-
-  public function save_discussion()
-  {
-    $this->form_validation->set_rules('title', 'Judul Topik', 'required');
-
-    if ($this->form_validation->run() === FALSE) {
-      $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode(['status' => 'error', 'message' => validation_errors()]));
-      return;
-    }
-
-    $id = $this->input->post('id');
-    $payload = [
-      'class_id' => $this->input->post('class_id'),
-      'title' => $this->input->post('title'),
-      'description' => $this->input->post('description')
-    ];
-
-    if ($id) {
-      $getData = $this->Pbl_tahap3_model->get_discussion($id);
-      if (!$getData) {
-        echo json_encode(['status'=>'error','message'=>'Forum tidak ada!', 'csrf_hash' => $this->security->get_csrf_hash()]);
-        return;
-      }
-      $this->Pbl_tahap3_model->update_discussion($id, $payload);
-      $msg = 'Topik Diskusi diperbarui';
-    } else {
-      $payload['id'] = generate_ulid();
-      $this->Pbl_tahap3_model->insert_discussion($payload);
-      $msg = 'Topik Diskusi ditambahkan';
-    }
-    echo json_encode([
-      'status' => 'success',
-      'message' => $msg,
-      'csrf_hash' => $this->security->get_csrf_hash()
-    ]);
-  }
-
-  public function delete_discussion($id = null)
-  {
-    $getData = $this->Pbl_tahap3_model->get_discussion($id);
-    if (!$getData) {
-      echo json_encode(['status'=>'error','message'=>'Gagal hapus forum!', 'csrf_hash' => $this->security->get_csrf_hash()]);
-      return;
-    }
-
-    if ($id) {
-      $this->Pbl_tahap3_model->delete_discussion($id);
-      $msg = 'Topik Diskusi dihapus.';
-      $status = 'success';
-    }
-    echo json_encode([
-      'status' => $status,
-      'message' => $msg,
-      'csrf_hash' => $this->security->get_csrf_hash()
-    ]);
-  }
 
   /**
    *  Halaman utama untuk Tahap 4
@@ -442,6 +300,8 @@ class Pbl extends CI_Controller
     $data['url_name'] = 'guru';
     $role_id = $this->session->userdata('role_id');    
     $data['is_admin_or_guru'] = $this->User_model->check_is_teacher($role_id);
+
+    $data['subjects'] = ['Matematika', 'IPA', 'IPS', 'Bahasa Indonesia', 'Bahasa Inggris', 'PPKN'];
 
     $this->load->view('templates/header', $data);
     // $this->load->view('templates/sidebar');
@@ -599,6 +459,8 @@ class Pbl extends CI_Controller
     $data['url_name'] = 'guru';
     $role_id = $this->session->userdata('role_id');    
     $data['is_admin_or_guru'] = $this->User_model->check_is_teacher($role_id);
+
+    $data['exam_subjects'] = ['Matematika', 'IPA', 'IPS', 'Bahasa Indonesia', 'Bahasa Inggris', 'PPKN'];
 
     $this->load->view('templates/header', $data);
     $this->load->view('guru/pbl_tahap5', $data);

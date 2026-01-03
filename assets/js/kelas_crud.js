@@ -56,19 +56,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="${window.BASE_URL}admin/dashboard/class_detail/${cls.id}" 
                       class="btn btn-info btn-sm btn-detail" 
                       title="Lihat Siswa">
-                      <i class="bi bi-eye"></i>
+                      <i class="bi bi-eye"></i> Detail
                     </a>
                 <button class="btn btn-warning btn-sm btn-edit" 
                     data-id="${cls.id}" 
                     data-name="${cls.name}"
                     data-teacher-id="${cls.teacher_id || ''}"
                     data-code="${cls.code || ''}">
-                    <i class="bi bi-pencil"></i>
+                    <i class="bi bi-pencil"></i> Edit
                 </button>
                 <button class="btn btn-danger btn-sm btn-delete" 
                     data-id="${cls.id}" 
                     data-name="${cls.name}">
-                    <i class="bi bi-trash"></i>
+                    <i class="bi bi-trash"></i> Hapus
                 </button>
                 `
             ];

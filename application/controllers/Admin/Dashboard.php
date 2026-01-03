@@ -7,9 +7,10 @@ class Dashboard extends CI_Controller {
 	{
 		parent::__construct();
 		is_logged_in();
+    $this->load->model('Dashboard_model', 'dashboard');
 	}
 
-	public function index()
+	/*public function index()
 	{
 		$data['user'] = $this->session->userdata();
 		$data['title'] = 'Dashboard Admin';
@@ -18,7 +19,51 @@ class Dashboard extends CI_Controller {
 		$this->load->view('templates/sidebar');
 		$this->load->view('dashboard/admin', $data);
 		$this->load->view('templates/footer');
-	}
+	}*/
+
+  public function index()
+  {
+    $data['title'] = 'Dashboard Admin';
+    $data['user'] = $this->session->userdata();
+
+    /* ===== CARD STATISTIC ===== */
+    $data['total_users']   = $this->dashboard->count_users();
+    $data['total_teachers'] = $this->dashboard->count_teachers();
+    $data['total_students'] = $this->dashboard->count_students();
+    $data['total_classes']  = $this->dashboard->count_classes();
+    $data['total_quizzes']  = $this->dashboard->count_pbl_quizzes();
+    $data['total_exams']    = $this->dashboard->count_exams();
+
+    /* ===== CHART DATA ===== */
+    $data['user_per_role'] = $this->dashboard->chart_users_by_role();
+    $data['class_per_year'] = $this->dashboard->chart_classes_per_year();
+    $data['avg_scores']     = $this->dashboard->chart_average_scores();
+    $data['teacher_student_ratio'] = $this->dashboard->chart_teacher_student();
+
+
+    /* ===== TABLE SUMMARY ===== */
+    $data['latest_classes'] = $this->dashboard->latest_classes();
+    $data['latest_teachers'] = $this->dashboard->latest_teachers();
+    $data['active_exams']    = $this->dashboard->active_exams();
+
+    $data['avg_exam_uts_uas'] = $this->dashboard->chart_exam_uts_uas();
+
+    $uts = $data['avg_exam_uts_uas']['data'][0];
+    $uas = $data['avg_exam_uts_uas']['data'][1];
+
+    if ($uas < $uts) {
+        $data['exam_insight'] = 'Nilai UAS menurun dibanding UTS, perlu evaluasi akhir semester.';
+    } else {
+        $data['exam_insight'] = 'Nilai UAS meningkat, pembelajaran PBL berjalan efektif.';
+    }
+
+        
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar');
+    $this->load->view('dashboard/admin', $data);
+    $this->load->view('templates/footer');
+    
+  }
 
     /**
      * Halaman index Kelas Admin.

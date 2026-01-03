@@ -80,7 +80,7 @@
             <tr>
               <th width="6%">No</th>
               <th>Judul</th>
-              <th>Deskripsi</th>
+              <th>Mata Pelajaran </th>
               <!-- <th style="width:20%" class="aksi">Aksi</th> -->
               <th class="aksi">Aksi</th>
             </tr>
@@ -116,8 +116,13 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-semibold">Deskripsi</label>
-            <textarea name="description" id="quizDescription" class="form-control" rows="3"></textarea>
+            <label class="form-label">Mata Pelajaran</label>
+              <select name="description" id="description" class="form-select" required>
+                <option value="">-- Pilih Mapel --</option>
+                <?php foreach ($subjects as $sub) : ?>
+                  <option value="<?= $sub ?>"><?= $sub ?></option>
+                <?php endforeach; ?>
+              </select>
           </div>
         </div>
 

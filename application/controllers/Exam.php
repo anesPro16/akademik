@@ -13,38 +13,77 @@ class Exam extends CI_Controller
   }
 
   /* =========================
-   * GURU – DAFTAR UJIAN
+   * GURU – DAFTAR Kelas
    * ========================= */
-  public function index($class_id = null)
+  public function index()
   {
-    if (!$class_id) redirect('guru/dashboard');
+    $user = $this->session->userdata();
+    $role_id = $user['role_id'];
+    $user_id = $user['user_id'];
+
+    if ($user['role'] === 'Siswa') {
+    	redirect('exam/student_list','refresh');
+    }
+
+    // 1. Validasi apakah user adalah Guru
+    if (!$this->User_model->check_is_teacher($role_id)) {
+        show_error('Akses ditolak. Halaman ini khusus Guru.', 403);
+    }
+
+    // 2. Ambil Data Kelas milik Guru tersebut
+    // Kita asumsikan Guru_model menghandle logika pengambilan kelas berdasarkan user_id guru
+    $data = [
+        'title'      => 'Pilih Kelas Ujian',
+        'user'       => $user,
+        'kelas_list' => $this->Guru_model->get_all_classes($user_id), 
+        'url_name'   => 'guru'
+    ];
+
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('exam/select_class', $data); // View baru untuk daftar kelas
+    $this->load->view('templates/footer');
+  }
+
+  /* =========================
+   * HALAMAN 2: MANAJEMEN UJIAN (CRUD)
+   * Masuk ke fitur ujian berdasarkan class_id
+   * ========================= */
+  public function management($class_id = null)
+  {
+    // Jika class_id kosong, kembalikan ke halaman pilih kelas
+    if (!$class_id) redirect('guru/exam');
 
     $user = $this->session->userdata();
     $role_id = $user['role_id'];
 
-    // Validasi guru
+    // 1. Validasi Guru
     if (!$this->User_model->check_is_teacher($role_id)) {
-      show_error('Akses ditolak', 403);
-    }
-    $teacher_id = $this->Exam_model->getTeacherId($user['user_id']);
-    // Validasi kelas milik guru
-    if (!$this->Exam_model->is_teacher_class($class_id, $teacher_id)) {
-      show_error('Bukan kelas Anda', 403);
+        show_error('Akses ditolak', 403);
     }
 
-    // [BARU] Data Mapel untuk Dropdown
+    // 2. Ambil ID Teacher dari User ID
+    $teacher_id = $this->Exam_model->getTeacherId($user['user_id']);
+
+    // 3. Validasi apakah Kelas ini benar milik Guru tersebut
+    if (!$this->Exam_model->is_teacher_class($class_id, $teacher_id)) {
+        show_error('Bukan kelas Anda atau Kelas tidak ditemukan.', 403);
+    }
+
+    // 4. Data Mapel untuk Dropdown
     $subjects = ['Matematika', 'IPA', 'IPS', 'Bahasa Indonesia', 'Bahasa Inggris', 'PPKN'];
 
     $data = [
-      'title'    => 'Manajemen Ujian',
-      'class_id' => $class_id,
-      'user'     => $user,
-      'subjects' => $subjects, 
-      'url_name' => 'guru'
+        'title'    => 'Manajemen Ujian',
+        'class_id' => $class_id, // ID Kelas yang sedang dikelola
+        'user'     => $user,
+        'subjects' => $subjects, 
+        'url_name' => 'guru'
     ];
 
     $this->load->view('templates/header', $data);
-    $this->load->view('exam/index', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('exam/index', $data); // View lama (Tabel CRUD Ujian)
     $this->load->view('templates/footer');
   }
 
@@ -504,6 +543,12 @@ public function delete_question()
 
 	public function student_list($class_id = null)
 	{
+		$user_id = $this->session->userdata('user_id');
+
+    // Ambil daftar sekolah dari model
+		$kelas = $this->Murid_model->get_kelas_by_murid($user_id);
+
+		$class_id = $kelas->id;
 	    if (!$class_id) show_404();
 	    
 	    $user = $this->session->userdata();
@@ -520,6 +565,7 @@ public function delete_question()
 	    ];
 
 	    $this->load->view('templates/header', $data);
+	    $this->load->view('templates/sidebar', $data);
 	    $this->load->view('exam/student_list', $data);
 	    $this->load->view('templates/footer');
 	}
@@ -775,7 +821,7 @@ public function save_answer()
 	      'status' => 'finished'
 	  ]);
 
-	  echo json_encode(['status' => 'success', 'redirect' => base_url('siswa/dashboard')]); // Sesuaikan redirect
+	  echo json_encode(['status' => 'success', 'redirect' => base_url('exam/student_list')]);
 	}
 
 

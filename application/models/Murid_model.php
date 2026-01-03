@@ -40,6 +40,16 @@ class Murid_model extends CI_Model {
     return $this->db->get()->result();
   }
 
+  public function get_kelas_by_murid($user_id)
+  {
+    $this->db->select('s.id, s.name, s.code'); // Menggunakan 'name' sesuai skema tabel classes
+    $this->db->from('classes as s');
+    $this->db->join('students as t', 's.id = t.class_id');
+    $this->db->where('t.user_id', $user_id);
+    
+    return $this->db->get()->row();
+  }
+
   public function get_class_details($class_id)
   {
       // Ambil info kelas

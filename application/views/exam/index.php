@@ -5,6 +5,16 @@
 </script>
 
 <div class="card">
+  <div class="pbl-header d-flex justify-content-between align-items-center flex-wrap gap-2 my-3 mx-3">
+    <div class="d-flex gap-2">
+      <a href="<?= base_url($url_name . '/pbl/tahap4/' . $class_id) ?>" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Tahap 4
+      </a>
+      <a href="<?= base_url($url_name . '/pbl/tahap5/' . $class_id); ?>" class="btn btn-primary btn-sm">
+        <i class="bi bi-list-task"></i> Tahap 5
+      </a>
+    </div>
+  </div>
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Daftar Ujian</h5>
     <button class="btn btn-primary btn-sm" id="btnAddExam">
