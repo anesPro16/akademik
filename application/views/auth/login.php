@@ -196,13 +196,12 @@
                                         Daftar sekarang
                                     </a>
                                 </small>
+                                <div class="text-center mt-3">
+                                    <small class="mt-2 text-center text-muted"> © <?= date('Y'); ?> SDN Pantai Hurip 02
+                                    </small>
+                                </div>
                             </div>
                             <!-- COPYRIGHT MOBILE -->
-                            <div class="login-copyright d-lg-none text-center mt-4">
-                                <small class="text-muted">
-                                    © <?= date('Y'); ?> SDN Pantai Hurip 02
-                                </small>
-                            </div>
                         </div>
                     </div>
 
