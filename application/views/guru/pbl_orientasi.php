@@ -27,7 +27,7 @@
         <i class="bi bi-arrow-left"></i> Kembali
       </a>
       <a href="<?= base_url($url_name . '/pbl/tahap2/' . $class_id); ?>" class="btn btn-primary btn-sm">
-        <i class="bi bi-list-task"></i> Tahap 2
+        <i class="bi bi-list-task"></i> Kuis
       </a>
     </div>
   </div>
@@ -37,10 +37,10 @@
 
   <div class="card border-0 shadow-sm">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-      <h5 class="m-0 font-weight-bold text-primary"><i class="bi bi-journal-text me-2"></i>Daftar Skenario Masalah</h5>
+      <h5 class="m-0 font-weight-bold text-primary"><i class="bi bi-journal-text me-2"></i>Daftar Materi</h5>
       <?php if ($is_admin_or_guru): ?>
         <button class="btn btn-sm btn-success" id="btnAddPbl">
-          <i class="bi bi-plus-lg"></i> Tambah Skenario
+          <i class="bi bi-plus-lg"></i> Buat Materi
         </button>
       <?php endif; ?>
     </div>
@@ -52,8 +52,8 @@
             <tr>
               <th width="5%">No</th>
               <th width="25%">Judul Masalah</th>
-              <th width="40%">Refleksi / Deskripsi</th>
-              <th width="15%">Materi Pendukung</th>
+              <th width="40%">Deskripsi</th>
+              <th width="15%">File</th>
               <?php if ($is_admin_or_guru): ?>
                 <th width="15%">Aksi</th>
               <?php endif; ?>
@@ -74,7 +74,7 @@
     <div class="modal-content">
       <form id="pblForm" enctype="multipart/form-data">
         <div class="modal-header">
-          <h5 class="modal-title" id="pblModalLabel">Form Skenario</h5>
+          <h5 class="modal-title" id="pblModalLabel">Form Materi</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -82,17 +82,17 @@
           <input type="hidden" name="class_id" value="<?= $class_id; ?>">
 
           <div class="mb-3">
-            <label for="pblTitle" class="form-label fw-bold">Judul Masalah</label>
+            <label for="pblTitle" class="form-label fw-bold">Judul</label>
             <input type="text" class="form-control" name="title" id="pblTitle" placeholder="Judul Materi" required>
           </div>
 
           <div class="mb-3">
-            <label for="pblReflection" class="form-label fw-bold">Refleksi Awal / Deskripsi</label>
-            <textarea class="form-control" name="reflection" id="pblReflection" rows="4" placeholder="Deskripsikan masalah atau pertanyaan." required></textarea>
+            <label for="pblReflection" class="form-label fw-bold">Deskripsi</label>
+            <textarea class="form-control" name="reflection" id="pblReflection" rows="4" placeholder="Deskripsikan masalah" required></textarea>
           </div>
 
           <div class="mb-3">
-            <label for="pblFile" class="form-label fw-bold">Upload Materi (Opsional)</label>
+            <label for="pblFile" class="form-label fw-bold">Upload Materi</label>
             <input type="file" class="form-control" name="file" id="pblFile" accept=".jpg,.jpeg,.png,.pdf,.mp4">
             <div class="form-text text-xs">Format: JPG, PDF, MP4. Maks 5MB.</div>
           </div>

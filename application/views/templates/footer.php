@@ -3,7 +3,7 @@
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">
-      &copy; <?= date('Y'); ?> <strong><span>KelasQu</span></strong>. All Rights Reserved
+      &copy; <?= date('Y'); ?> <strong><span>RiyonClass</span></strong>. All Rights Reserved
     </div>
     <div class="credits">
       Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>

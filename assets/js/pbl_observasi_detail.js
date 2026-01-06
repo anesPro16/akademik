@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Tombol Edit Nilai
                 gradeBtnHtml = `
-                <button class="btn btn-sm btn-warning btn-grade mb-1" 
+                <button class="btn btn-sm btn-warning btn-grade" 
                 title="Edit Nilai"
                 data-user_id="${item.user_id}" 
                 data-student_name="${item.student_name}"
@@ -65,22 +65,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 // Tombol Hapus Nilai (Hanya muncul jika sudah dinilai)
-                deleteGradeBtn = `
-                <button class="btn btn-sm btn-outline-danger btn-delete-grade mb-1" 
+                /*deleteGradeBtn = `
+                <button class="btn btn-sm btn-outline-danger btn-delete-grade" 
                 title="Hapus Nilai"
                 data-id="${item.grade_id}" 
                 data-student_name="${item.student_name}">
                 Hapus Nilai
                 </button>
-                `;
+                `;*/
 
               } else {
                 // Belum Dinilai
-                gradeStatusHtml = `<span class="badge bg-secondary">Belum Dinilai</span>`;
+                gradeStatusHtml = `<span class="badge bg-secondary">0</span>`;
                 
                 // Tombol Beri Nilai
                 gradeBtnHtml = `
-                <button class="btn btn-sm btn-primary btn-grade mb-1" 
+                <button class="btn btn-sm btn-primary btn-grade" 
                 title="Beri Nilai"
                 data-user_id="${item.user_id}" 
                 data-student_name="${item.student_name}"
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gradeStatusHtml,
 
                 // Kolom Aksi (Nilai, Hapus Nilai, Hapus File)
-                `<div class="d-flex flex-column gap-1">
+                `<div class="d-flex justify-content-center gap-2">
                 ${gradeBtnHtml}
                 ${deleteGradeBtn}
                 <button class="btn btn-sm btn-danger btn-delete" 

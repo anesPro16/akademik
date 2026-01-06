@@ -85,7 +85,7 @@ const openPreview = (url) => {
   // --- KONFIGURASI CRUD HANDLER ---
   const pblConfig = {
   	baseUrl: window.BASE_URL,
-  	entityName: 'Skenario Masalah',
+  	entityName: 'Materi',
   	readOnly: !window.IS_ADMIN_OR_GURU,
 
     // DOM SELECTORS
@@ -115,8 +115,8 @@ const openPreview = (url) => {
 
     // UI TEXTS
     modalTitles: {
-    	add: 'Tambah Skenario Baru',
-    	edit: 'Edit Skenario Masalah'
+    	add: 'Tambah Materi',
+    	edit: 'Edit Materi'
     },
     deleteNameField: 'title',
 

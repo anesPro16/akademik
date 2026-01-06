@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formId: 'questionForm',
     modalLabelId: 'questionModalLabel',
     tableId: 'questionTable',
+    tableParentSelector: '.kuisContainer',
     btnAddId: 'btnAddQuestion',
     hiddenIdField: 'questionId',
     csrf: csrfConfig,
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="btn btn-sm btn-outline-danger btn-delete"
               data-id="${res.id}"
               data-student_name="${res.student_name} (Nilai: ${res.score})">
-              <i class="bi bi-trash"></i> Hapus / Reset
+              <i class="bi bi-trash"></i> Reset
             </button>
             `
         ];

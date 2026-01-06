@@ -47,10 +47,10 @@
 
     <div class="d-flex gap-2">
       <a href="<?= base_url($url_name . '/pbl/index/' . $class_id) ?>" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left"></i> Tahap 1
+        <i class="bi bi-arrow-left"></i> Materi
       </a>
       <a href="<?= base_url($url_name . '/pbl/tahap3/' . $class_id); ?>" class="btn btn-primary btn-sm">
-        <i class="bi bi-list-task"></i> Tahap 3
+        <i class="bi bi-list-task"></i> Observasi
       </a>
     </div>
   </div>
@@ -68,7 +68,7 @@
         Daftar Kuis
       </h5>
       <button class="btn btn-primary btn-sm btn-add-quiz" id="btnAddQuiz">
-        <i class="bi bi-plus-circle"></i> Tambah Kuis
+        <i class="bi bi-plus-circle"></i> Buat Kuis
       </button>
     </div>
 

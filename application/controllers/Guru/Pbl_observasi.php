@@ -18,7 +18,7 @@ class Pbl_observasi extends CI_Controller
         $slot = $this->Pbl_observasi_model->get_slot_by_id($slot_id);
         if (!$slot) show_404();
 
-        $data['title'] = 'Detail Observasi: ' . $slot->title;
+        $data['title'] = 'Halaman Detail Ruang Observasi';
         $data['slot'] = $slot;
         $data['class_id'] = $slot->class_id; // Untuk tombol kembali
         

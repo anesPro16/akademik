@@ -52,14 +52,27 @@ class Murid_model extends CI_Model {
 
   public function get_class_details($class_id)
   {
-      // Ambil info kelas
-    $class = $this->db->get_where('classes', [
-      'id' => $class_id, 
-    ])->row();
+    // 1. Pilih kolom dari classes dan ambil nama dari tabel users (di-alias jadi teacher_name)
+    $this->db->select('classes.*, users.name as teacher_name');
+    $this->db->from('classes');
 
+    // 2. JOIN PERTAMA: Hubungkan classes ke teachers
+    // Menggunakan classes.teacher_id (bukan classes.user_id milik admin)
+    $this->db->join('teachers', 'teachers.id = classes.teacher_id', 'left');
+
+    // 3. JOIN KEDUA: Hubungkan teachers ke users
+    // Untuk mendapatkan nama asli guru dari tabel users
+    $this->db->join('users', 'users.id = teachers.user_id', 'left');
+
+    // 4. Filter berdasarkan ID kelas
+    $this->db->where('classes.id', $class_id);
+    
+    $class = $this->db->get()->row();
+
+    // Jika kelas tidak ditemukan, kembalikan null
     if (!$class) return null;
 
-      // Hitung jumlah siswa di kelas
+    // 5. Hitung jumlah siswa (logika tetap sama)
     $this->db->where('class_id', $class_id);
     $class->student_count = $this->db->count_all_results('students');
 

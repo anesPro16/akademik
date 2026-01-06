@@ -25,6 +25,110 @@ class Dashboard extends CI_Controller {
 		$this->load->view('templates/footer');
 	}
 
+  public function dashboard_stats()
+    {
+        $user_id = $this->session->userdata('user_id');
+
+        // 1. Ambil ID Kelas yang diajar oleh guru ini
+        // Asumsi: Guru_model->get_all_classes mengembalikan array object kelas
+        $classes = $this->Guru_model->get_all_classes($user_id);
+        
+        if (empty($classes)) {
+            echo json_encode(['status' => 'empty']);
+            return;
+        }
+
+        $class_ids = array_column($classes, 'id');
+
+        // ---------------------------------------------------------
+        // A. Statistik Cards
+        // ---------------------------------------------------------
+
+        // 1. Total Siswa (Mengambil dari tabel students/users via class_id)
+        // Asumsi ada tabel 'students' yang menghubungkan user_id (siswa) dengan class_id
+        $this->db->where_in('class_id', $class_ids);
+        $total_siswa = $this->db->count_all_results('students'); 
+
+        // 2. Perlu Pemeriksaan (Essay Grade IS NULL)
+        // Join: Submission -> Essay -> Class
+        $this->db->select('count(subs.id) as total');
+        $this->db->from('pbl_essay_submissions subs');
+        $this->db->join('pbl_solution_essays essay', 'essay.id = subs.essay_id'); // Asumsi nama tabel pbl_solution_essays
+        $this->db->where_in('essay.class_id', $class_ids);
+        $this->db->where('subs.grade', NULL);
+        $pending_grading = $this->db->get()->row()->total;
+
+        // 3. Rata-rata Nilai Kuis (Seluruh Kelas)
+        // Join: Quiz Result -> Quiz -> Class
+        $this->db->select_avg('qr.score');
+        $this->db->from('pbl_quiz_results qr');
+        $this->db->join('pbl_quizzes q', 'q.id = qr.quiz_id'); // Asumsi nama tabel pbl_quizzes
+        $this->db->where_in('q.class_id', $class_ids);
+        $avg_quiz = $this->db->get()->row()->score;
+
+        // ---------------------------------------------------------
+        // B. Data Chart: Sebaran Nilai Kuis (Bar Chart)
+        // ---------------------------------------------------------
+        $this->db->select('
+            SUM(CASE WHEN qr.score <= 50 THEN 1 ELSE 0 END) as range_e,
+            SUM(CASE WHEN qr.score > 50 AND qr.score <= 70 THEN 1 ELSE 0 END) as range_c,
+            SUM(CASE WHEN qr.score > 70 AND qr.score <= 85 THEN 1 ELSE 0 END) as range_b,
+            SUM(CASE WHEN qr.score > 85 THEN 1 ELSE 0 END) as range_a
+        ');
+        $this->db->from('pbl_quiz_results qr');
+        $this->db->join('pbl_quizzes q', 'q.id = qr.quiz_id');
+        $this->db->where_in('q.class_id', $class_ids);
+        $quiz_dist = $this->db->get()->row();
+
+        // ---------------------------------------------------------
+        // C. Data Chart: Status Essay (Doughnut Chart)
+        // ---------------------------------------------------------
+        $this->db->select('
+            SUM(CASE WHEN subs.grade IS NOT NULL THEN 1 ELSE 0 END) as graded,
+            SUM(CASE WHEN subs.grade IS NULL THEN 1 ELSE 0 END) as pending
+        ');
+        $this->db->from('pbl_essay_submissions subs');
+        $this->db->join('pbl_solution_essays essay', 'essay.id = subs.essay_id');
+        $this->db->where_in('essay.class_id', $class_ids);
+        $essay_stats = $this->db->get()->row();
+
+        // ---------------------------------------------------------
+        // D. Tabel Prioritas (5 Submission Terbaru yg belum dinilai)
+        // ---------------------------------------------------------
+        $this->db->select('subs.id, subs.created_at, u.name as student_name, essay.id, essay.title as task_title, essay.class_id');
+        $this->db->from('pbl_essay_submissions subs');
+        $this->db->join('pbl_solution_essays essay', 'essay.id = subs.essay_id');
+        $this->db->join('users u', 'u.id = subs.user_id');
+        $this->db->where_in('essay.class_id', $class_ids);
+        $this->db->where('subs.grade', NULL);
+        $this->db->order_by('subs.created_at', 'DESC');
+        $this->db->limit(5);
+        $priority_list = $this->db->get()->result();
+
+        // Response JSON
+        echo json_encode([
+            'status' => 'success',
+            'cards' => [
+                'students' => $total_siswa,
+                'pending'  => $pending_grading,
+                'avg_quiz' => number_format($avg_quiz ?? 0, 1)
+            ],
+            'charts' => [
+                'quiz_dist' => [
+                    $quiz_dist->range_e ?? 0, 
+                    $quiz_dist->range_c ?? 0, 
+                    $quiz_dist->range_b ?? 0, 
+                    $quiz_dist->range_a ?? 0
+                ],
+                'essay_stats' => [
+                    $essay_stats->graded ?? 0,
+                    $essay_stats->pending ?? 0
+                ]
+            ],
+            'priority_list' => $priority_list
+        ]);
+    }
+
 	/**
    * Halaman detail untuk satu sekolah, menampilkan kelas-kelas guru di sekolah tsb.
    * @param string $school_id ID dari sekolah yang akan dilihat
@@ -171,7 +275,7 @@ class Dashboard extends CI_Controller {
 
         // 2. Data pendukung
         $data['siswa_list'] = $this->User_model->get_students_by_role_name('siswa');    
-        $data['title'] = 'Detail Kelas: ' . $data['kelas']->name;
+        $data['title'] = 'Halaman Detail Kelas';
         $data['user'] = $this->session->userdata();
 
         // 3. Flag Permission (Admin = True)

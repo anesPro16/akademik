@@ -12,11 +12,11 @@
   <div class="pbl-header d-flex justify-content-between align-items-center flex-wrap gap-2">
     <div class="d-flex gap-2">
       <a href="<?= base_url($url_name . '/pbl/tahap3/' . $class_id) ?>" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left"></i>Tahap 3
+        <i class="bi bi-arrow-left"></i> Observasi
       </a>
       <?php if ($url_name == 'guru'): ?>
-        <a href="<?= base_url('exam/index/' . $class_id); ?>" class="btn btn-primary btn-sm">
-          <i class="bi bi-list-task"></i>Ujian
+        <a href="<?= base_url($url_name . '/dashboard/class_detail/' . $class_id); ?>" class="btn btn-primary btn-sm">
+          <i class="bi bi-list-task"></i> Kembali ke kelas
         </a>
 
       <?php else: ?>
@@ -40,10 +40,10 @@
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
       <h5 class="m-0 font-weight-bold text-primary">
         <i class="bi bi-card-checklist me-2"></i>
-        Daftar Aktivitas Esai
+        Daftar Esai
       </h5>
       <button class="btn btn-primary btn-sm btn-add-quiz" id="btnAddEsai">
-        <i class="bi bi-plus-circle"></i> Tambah Esai
+        <i class="bi bi-plus-circle"></i> Buat Esai
       </button>
     </div>
 
@@ -73,7 +73,7 @@
     <div class="modal-content shadow-lg border-0">
       <form id="esaiForm" autocomplete="off">
         <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title mb-0" id="esaiModalLabel">Form Aktivitas Esai</h5>
+          <h5 class="modal-title mb-0" id="esaiModalLabel">Form Esai</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -81,7 +81,7 @@
           <input type="hidden" name="class_id" value="<?= $class_id; ?>">
           
           <div class="mb-3">
-            <label for="esaiTitle" class="form-label">Judul Aktivitas Esai</label>
+            <label for="esaiTitle" class="form-label">Judul Esai</label>
             <input type="text" name="title" id="esaiTitle" class="form-control" required>
           </div>
           <div class="mb-3">

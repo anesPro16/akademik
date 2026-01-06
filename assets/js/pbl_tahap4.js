@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tokenHash: csrfEl ? csrfEl.value : ''
   };
 
-  // --- Inisialisasi CRUD 1: Aktivitas Esai Solusi ---
+  // --- Inisialisasi CRUD 1: Esai Solusi ---
   const esaiConfig = {
     baseUrl: window.BASE_URL,
-    entityName: 'Aktivitas Esai',
+    entityName: 'Esai',
     modalId: 'esaiModal',
     formId: 'esaiForm',
     modalLabelId: 'esaiModalLabel',
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
       delete: (id) => `guru/pbl/delete_solution_essay/${id}`
     },
     deleteMethod: 'POST',
-    modalTitles: { add: 'Tambah Aktivitas Esai', edit: 'Edit Aktivitas Esai' },
+    modalTitles: { add: 'Tambah Esai', edit: 'Edit Esai' },
     deleteNameField: 'title', // (data-title dari tombol delete)
 
     dataMapper: (q, i) => {
@@ -63,47 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // --- Inisialisasi CRUD 2: Kuis Evaluasi ---
-  /*const evaluasiConfig = {
-    baseUrl: window.BASE_URL,
-    entityName: 'Kuis Evaluasi',
-    modalId: 'evaluasiModal',
-    formId: 'evaluasiForm',
-    modalLabelId: 'evaluasiModalLabel',
-    hiddenIdField: 'evaluasiId',
-    tableId: 'kuisEvaluasiTable',
-    btnAddId: 'btnAddKuisEvaluasi',
-    tableParentSelector: '#evaluasi', // Parent tab
-    csrf: csrfConfig,
-    urls: {
-      load: IS_ADMIN_OR_GURU ? `guru/pbl/get_evaluation_quizzes/${CURRENT_CLASS_ID}` : `siswa/pbl/get_evaluation_quizzes/${CURRENT_CLASS_ID}`,
-      save: `guru/pbl/save_evaluation_quiz`,
-      delete: (id) => `guru/pbl/delete_evaluation_quiz/${id}`
-    },
-    deleteMethod: 'POST',
-    modalTitles: { add: 'Tambah Kuis Evaluasi', edit: 'Edit Kuis Evaluasi' },
-    deleteNameField: 'title',
-
-    dataMapper: (q, i) => {
-      const detailBtn = `<a href="${window.BASE_URL}${window.URL_NAME}/pbl_kuis_evaluasi/detail/${q.id}" class="btn btn-sm btn-info"><i class="bi bi-eye"></i> Detail</a>`;
-      
-      const actionBtns = IS_ADMIN_OR_GURU ? `
-        <button class="btn btn-sm btn-warning btn-edit" data-id="${q.id}" data-title="${q.title}" data-description="${q.description || ''}"><i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-danger btn-delete" data-id="${q.id}" data-title="${q.title}"><i class="bi bi-trash"></i></button>
-      ` : '';
-
-      return [i + 1, q.title, q.description || '-', detailBtn + actionBtns];
-    },
-    
-    formPopulator: (form, data) => {
-      form.querySelector('#evaluasiId').value = data.id;
-      form.querySelector('[name="title"]').value = data.title;
-      form.querySelector('[name="description"]').value = data.description || '';
-    }
-  };*/
-
-  // Inisialisasi kedua handler
+  // Inisialisasi handler
   new CrudHandler(esaiConfig).init();
-  // new CrudHandler(evaluasiConfig).init();
   
 });

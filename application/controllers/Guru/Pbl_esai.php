@@ -25,7 +25,7 @@ class Pbl_esai extends CI_Controller
 		$essay = $this->Pbl_esai_model->get_essay_details($essay_id);
 		if (!$essay) show_404();
 
-		$data['title'] = 'Review Esai: ' . $essay->title;
+		$data['title'] = 'Halaman Detail Esai';
 		$data['essay'] = $essay;
 		$data['class_id'] = $essay->class_id; // Ambil class_id dari esai
 		$data['user'] = $this->session->userdata();

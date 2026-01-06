@@ -7,7 +7,7 @@
   <meta name="csrf-name" content="<?= $this->security->get_csrf_token_name(); ?>">
   <meta name="csrf-hash" content="<?= $this->security->get_csrf_hash(); ?>">
   
-  <title><?= isset($title) ? $title : 'KelasQu'; ?></title>
+  <title><?= isset($title) ? $title : 'RiyonClass'; ?></title>
 
   <!-- Favicons -->
   <link href="<?= base_url('assets/img/favicon.png'); ?>" rel="icon">
@@ -36,7 +36,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="<?= base_url(); ?>" class="logo d-flex align-items-center">
         <!-- <img src="<?= base_url('assets/img/logo.png'); ?>" alt=""> -->
-        <span class="d-none d-lg-block">KelasQu</span>
+        <span class="d-none d-lg-block">RiyonClass</span>
       </a>
       <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
       <i class="bi bi-layout-sidebar toggle-sidebar-btn"></i>
@@ -179,5 +179,5 @@
 
   <main id="main" class="main">
     <div class="pagetitle">
-      <h1><?= $title ?? 'KelasQu'; ?></h1>
+      <h1><?= $title ?? 'RiyonClass'; ?></h1>
     </div><!-- End Page Title -->

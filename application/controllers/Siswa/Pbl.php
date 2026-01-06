@@ -12,7 +12,8 @@ class Pbl extends CI_Controller
   public function index($class_id = null)
   {
     if (!$class_id) redirect('guru/dashboard');
-    $data['title'] = 'Tahap 1 – Orientasi Masalah';
+    // $data['title'] = 'Tahap 1 – Orientasi Masalah';
+    $data['title'] = 'Materi';
     $data['url_name'] = 'siswa';
     $data['class_id'] = $class_id;
     $data['user'] = $this->session->userdata();
@@ -123,7 +124,8 @@ class Pbl extends CI_Controller
   public function tahap2($class_id = null)
 	{
 	  if (!$class_id) redirect('guru/dashboard');
-	  $data['title'] = 'Tahap 2 – Organisasi Belajar';
+	  // $data['title'] = 'Tahap 2 – Organisasi Belajar';
+    $data['title'] = 'Kuis';
 	  $data['class_id'] = $class_id;
 	  $data['user'] = $this->session->userdata();
     $data['url_name'] = 'siswa';
@@ -283,7 +285,8 @@ class Pbl extends CI_Controller
       redirect('guru/dashboard'); // Arahkan ke dashboard jika class_id tidak ada
     }
 
-    $data['title'] = 'Tahap 3 – Observasi';
+    // $data['title'] = 'Tahap 3 – Observasi';
+    $data['title'] = 'Observasi';
     $data['class_id'] = $class_id;
     $data['user'] = $this->session->userdata();
     $data['url_name'] = 'siswa';
@@ -440,7 +443,8 @@ class Pbl extends CI_Controller
       redirect('guru/dashboard');
     }
 
-    $data['title'] = 'Tahap 4 – Pengembangan Solusi';
+    // $data['title'] = 'Tahap 4 – Pengembangan Solusi';
+    $data['title'] = 'Esai';
     $data['class_id'] = $class_id;
     $data['user'] = $this->session->userdata();
     $data['url_name'] = 'siswa';

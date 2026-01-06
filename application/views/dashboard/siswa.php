@@ -14,7 +14,7 @@
                                 <span class="icon text-white-50">
                                     <i class="fas fa-arrow-right"></i>
                                 </span>
-                                <span class="text">Masuk & Lihat Kelas</span>
+                                <span class="text">Masuk & Lihat Kelass</span>
                             </a>
                         </div>
                     </div>

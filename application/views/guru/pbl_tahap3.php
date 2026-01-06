@@ -12,10 +12,10 @@
   <div class="pbl-header d-flex justify-content-between align-items-center flex-wrap gap-2">
     <div class="d-flex gap-2">
       <a href="<?= base_url($url_name . '/pbl/tahap2/' . $class_id) ?>" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left"></i>Tahap 2
+        <i class="bi bi-arrow-left"></i>Kuis
       </a>
       <a href="<?= base_url($url_name . '/pbl/tahap4/' . $class_id); ?>" class="btn btn-primary btn-sm">
-        <i class="bi bi-list-task"></i>Tahap 4
+        <i class="bi bi-list-task"></i>Esai
       </a>
     </div>
   </div>
@@ -33,7 +33,7 @@
         Daftar Ruang Upload
       </h5>
       <button class="btn btn-primary btn-sm btn-add-quiz" id="btnAddObservasi">
-        <i class="bi bi-plus-circle"></i> Tambah Ruang
+        <i class="bi bi-plus-circle"></i> Buat Ruang
       </button>
     </div>
 
@@ -71,7 +71,7 @@
           <input type="hidden" name="class_id" value="<?= $class_id; ?>">
           
           <div class="mb-3">
-            <label for="observasiTitle" class="form-label">Judul Ruang Observasi</label>
+            <label for="observasiTitle" class="form-label">Judul Ruang</label>
             <input type="text" name="title" id="observasiTitle" class="form-control" required>
           </div>
           <div class="mb-3">
