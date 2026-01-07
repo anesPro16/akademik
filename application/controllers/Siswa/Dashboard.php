@@ -10,18 +10,54 @@ class Dashboard extends CI_Controller {
 	}
 
 	public function index()
-	{
-		$data['title'] = 'Dashboard Siswa';
-		$data['user'] = $this->session->userdata();
-		$user_id = $this->session->userdata('user_id');
+    {
+        $data['title'] = 'Dashboard Siswa';
+        
+        // Ambil data session
+        $user_id = $this->session->userdata('user_id');
+        
+        // Ambil detail lengkap user untuk Profil Widget (Foto, Email, dll)
+        // Asumsi fungsi get($id) ada di User_model dan mengembalikan row
+        $data['user'] = $this->User_model->get($user_id); 
+        
+        // Jika User_model->get() mengembalikan object, convert ke array agar aman di view
+        // Atau sesuaikan pemanggilan di view ($user->name vs $user['name'])
+        if(is_object($data['user'])){
+            $data['user'] = (array) $data['user'];
+        }
 
-    // Ambil daftar sekolah dari model
-		$data['sekolah_list'] = $this->Murid_model->get_sekolah_by_guru($user_id);
-		$this->load->view('templates/header', $data);
-		$this->load->view('templates/sidebar');
-		$this->load->view('dashboard/siswa', $data);
-		$this->load->view('templates/footer');
-	}
+        // Ambil data kelas
+        $data['classes'] = $this->Murid_model->get_classes_by_student($user_id);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('dashboard/siswa', $data);
+        $this->load->view('templates/footer');
+    }
+
+  public function kelas()
+  {
+    $data['title'] = 'Kelas';
+    $data['user']  = $this->session->userdata();
+    
+    $user_id = $this->session->userdata('user_id');
+    $role_id = $this->session->userdata('role_id');
+
+    $role = $this->session->userdata('role');
+    if ($role != 'Siswa') redirect('siswa');
+
+    $data['classes'] = $this->Murid_model->get_classes_by_student($user_id);
+    $data['role_label'] = 'Siswa';
+    $data['url_name'] = 'siswa';
+
+    // Hitung statistik sederhana untuk Info Card Header
+    $data['total_kelas'] = count($data['classes']);
+    
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar');
+    $this->load->view('dashboard/kelas', $data); // View reusable
+    $this->load->view('templates/footer');
+  }
 
 	/**
    * [PAGE LOAD] Menampilkan halaman detail kelas (daftar siswa).

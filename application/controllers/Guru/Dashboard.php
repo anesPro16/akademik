@@ -129,6 +129,31 @@ class Dashboard extends CI_Controller {
         ]);
     }
 
+
+  public function kelas()
+  {
+    $data['title'] = 'Kelas';
+    $data['user']  = $this->session->userdata();
+    
+    $user_id = $this->session->userdata('user_id');
+    $role_id = $this->session->userdata('role_id');
+
+    $role = $this->session->userdata('role');
+    if ($role != 'Guru') redirect('guru');
+
+    $data['classes'] = $this->Murid_model->get_classes_by_teacher($user_id);
+    $data['role_label'] = 'Pengajar';
+    $data['url_name'] = 'guru';
+
+    // Hitung statistik sederhana untuk Info Card Header
+    $data['total_kelas'] = count($data['classes']);
+    
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar');
+    $this->load->view('dashboard/kelas', $data); // View reusable
+    $this->load->view('templates/footer');
+  }
+
 	/**
    * Halaman detail untuk satu sekolah, menampilkan kelas-kelas guru di sekolah tsb.
    * @param string $school_id ID dari sekolah yang akan dilihat

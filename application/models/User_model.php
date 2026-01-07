@@ -165,6 +165,28 @@ class User_model extends CI_Model
         // Jika tidak, kembalikan false
         return false;
     }
+
+    public function get_profile($user_id)
+    {
+        $this->db->select('u.*, r.role');
+        $this->db->from('users u');
+        $this->db->join('roles r', 'r.id = u.role_id');
+        $this->db->where('u.id', $user_id);
+        return $this->db->get()->row();
+    }
+
+    public function update_profile($user_id, $data)
+    {
+        $this->db->where('id', $user_id);
+        $this->db->update('users', $data);
+    }
+
+    public function is_username_exist($username, $exclude_id)
+    {
+        $this->db->where('username', $username);
+        $this->db->where('id !=', $exclude_id);
+        return $this->db->get('users')->num_rows() > 0;
+    }
 }
 
 /* End of file User_model.php */

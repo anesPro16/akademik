@@ -126,7 +126,7 @@
 		</div>
 	</div>
 
-	<h5 class="h5 text-gray-800 mb-3 ml-2 border-bottom pb-2">Daftar Kelas Anda</h5>
+	<!-- <h5 class="h5 text-gray-800 mb-3 ml-2 border-bottom pb-2">Daftar Kelas Anda</h5>
 	<div class="row">
 		<?php if (!empty($kelas_list)): ?>
 			<?php foreach ($kelas_list as $kelas): ?>
@@ -155,7 +155,7 @@
 			<?php else: ?>
 				<div class="col-12 text-center text-muted">Belum ada kelas yang ditugaskan.</div>
 			<?php endif; ?>
-		</div>
+		</div> -->
 
 	</div>
 

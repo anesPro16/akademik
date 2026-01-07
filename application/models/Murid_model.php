@@ -30,13 +30,72 @@ class Murid_model extends CI_Model {
     return $this->db->get()->result();
   }
 
-  public function get_sekolah_by_guru($user_id)
+  /*public function get_sekolah_by_guru($user_id)
   {
-    $this->db->select('s.id, s.name, s.code'); // Menggunakan 'name' sesuai skema tabel classes
+    $this->db->select('s.id, s.name, s.code');
     $this->db->from('classes as s');
     $this->db->join('students as t', 's.id = t.class_id');
     $this->db->where('t.user_id', $user_id);
     
+    return $this->db->get()->result();
+  }*/
+
+  public function get_classes_by_student($user_id)
+  {
+    $this->db->select('
+      c.id, 
+      c.name as class_name, 
+      c.code, 
+      u.name as teacher_name, 
+      c.created_at
+    ');
+    
+    // 1. Dari Siswa (Cari siswa ini ada di kelas mana)
+    $this->db->from('students as s');
+    
+    // 2. Ke Kelas (Ambil info kelasnya)
+    $this->db->join('classes as c', 's.class_id = c.id');
+    
+    // 3. Ke Guru (Cari siapa pengajar kelas ini)
+    // c.teacher_id menunjuk ke ID tabel teachers
+    $this->db->join('teachers as t', 'c.teacher_id = t.id');
+    
+    // 4. Ke User (Cari nama asli si guru)
+    // PERBAIKAN DISINI: t.user_id menunjuk ke u.id (Primary Key Users)
+    $this->db->join('users as u', 't.user_id = u.id'); 
+    
+    // Filter user yang login
+    $this->db->where('s.user_id', $user_id);
+    
+    $this->db->order_by('c.name', 'ASC');
+    
+    return $this->db->get()->result();
+  }
+
+  public function get_classes_by_teacher($user_id)
+  {
+    $this->db->select('
+      c.id, 
+      c.name as class_name, 
+      c.code, 
+      u.name as teacher_name,
+      c.created_at
+    ');
+    
+    // 1. Mulai dari Classes
+    $this->db->from('classes as c');
+    
+    // 2. Join ke Teachers
+    $this->db->join('teachers as t', 'c.teacher_id = t.id');
+    
+    // 3. Join ke Users (untuk memastikan nama guru tampil benar)
+    $this->db->join('users as u', 't.user_id = u.id');
+    
+    // Filter: Cari data teacher yang user_id-nya sama dengan user yang login
+    $this->db->where('t.user_id', $user_id); 
+    
+    $this->db->order_by('c.created_at', 'DESC');
+
     return $this->db->get()->result();
   }
 
